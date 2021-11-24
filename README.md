@@ -13,7 +13,8 @@ The russian version of the task can be found in the repository.
    2.1. [Information](#information)
 3. [Chapter III](#chapter-iii) \
    3.1. [Part 1](#part-1-working-with-the-cat-utility)  
-   3.2. [Part 2](#part-2-working-with-grep-utility)
+   3.2. [Part 2](#part-2-working-with-grep-utility)  
+   3.3. [Part 3](#part-3-bonus-implementation-of-some-grep-utility-flags)
 
 
 ## Preamble
@@ -67,7 +68,7 @@ Cat is one of the most frequently used commands on Unix-like operating systems. 
 
 | No. | Options | Description |
 | ------ | ------ | ------ |
-| 1 | -b (GNU: --number-nonblank) | number non-blank output lines |
+| 1 | -b (GNU: --number-nonblank) | numbers only non-empty lines |
 | 2 | -e implies -v (GNU only: -E the same, but without implying -v) | but also display end-of-line characters as $  |
 | 3 | -n (GNU: --number) | number all output lines |
 | 4 | -s (GNU: --squeeze-blank) | squeeze multiple adjacent blank lines |
@@ -100,7 +101,7 @@ Cat is one of the most frequently used commands on Unix-like operating systems. 
 ## Chapter III
 
 - The programs must be developed in C language of C11 standard using gcc compiler.
-- The program code must be located in the src folder
+- The program code of the cat and grep must be located on the develop branch in the src/cat/ and src/grep/ folders, respectively  
 - The programs must be executable files with command line arguments
 - The programs must be built with Makefile with appropriate targets: s21_cat, s21_grep
 - If third-party libraries are used, there must be build scripts in makefile to connect/load them
@@ -112,7 +113,7 @@ Cat is one of the most frequently used commands on Unix-like operating systems. 
 ## Part 1. Working with the cat utility
 
 You need to develop a cat utility:
-- Support of all flags
+- Support of all flags (including GNU versions)
 - The source, header, and build files must be placed in the src/cat/ directory
 - The resulting executable file must be placed in the directory src/cat/ and named s21_cat
 
