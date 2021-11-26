@@ -109,6 +109,8 @@ Cat is one of the most frequently used commands on Unix-like operating systems. 
 - The programs must be developed according to the principles of structured programming
 - Code duplication must be avoided, common modules must be reused between the utilities
 - You can use standard and non-standard C libraries, or you can use your own developed libraries from other projects
+- The statement of the message in the case of an error does not matter
+- Input via stdin is not required to be supported
 
 ## Part 1. Working with the cat utility
 
