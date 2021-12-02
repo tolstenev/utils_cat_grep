@@ -102,6 +102,7 @@ Cat is one of the most frequently used commands on Unix-like operating systems. 
 
 - The programs must be developed in C language of C11 standard using gcc compiler.
 - The program code of the cat and grep must be located on the develop branch in the src/cat/ and src/grep/ folders, respectively  
+- Do not use outdated and legacy language constructions and library functions. Pay attention to the legacy and obsolete marks in the official documentation on the language and the libraries used. Use the POSIX.1-2017 standard.
 - The programs must be executable files with command line arguments
 - The programs must be built with Makefile with appropriate targets: s21_cat, s21_grep
 - If third-party libraries are used, there must be build scripts in makefile to connect/load them
