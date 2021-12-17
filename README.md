@@ -116,7 +116,7 @@ Cat is one of the most frequently used commands on Unix-like operating systems. 
 ## Part 1. Working with the cat utility
 
 You need to develop a cat utility:
-- Support of all flags (including GNU versions)
+- Support of all flags (including GNU versions) specified [above](#cat-options)
 - The source, header, and build files must be placed in the src/cat/ directory
 - The resulting executable file must be placed in the directory src/cat/ and named s21_cat
 
