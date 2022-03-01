@@ -1,5 +1,10 @@
 # Simple Bash Utils
 
+> При старте работы над проектом просим вас постараться хронометрировать время работы над проектом.
+> По завершении работы над проектом просим вас ответить на два вопроса [в этом опросе](https://forms.gle/ehJkmYpKMuE9Gf6s8)
+
+
+
 Development of Bash text utilities: cat, grep.
 
 The russian version of the task can be found in the repository.
