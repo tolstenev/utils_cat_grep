@@ -4,13 +4,12 @@
 > По завершении работы над проектом просим вас ответить на два вопроса [в этом опросе](https://forms.gle/ehJkmYpKMuE9Gf6s8)
 
 
-
 Development of Bash text utilities: cat, grep.
 
 The russian version of the task can be found in the repository.
 
-
 ## Contents
+
 0. [Preamble](#preamble)
 1. [Chapter I](#chapter-i) \
    1.1. [Introduction](#introduction)
@@ -19,7 +18,8 @@ The russian version of the task can be found in the repository.
 3. [Chapter III](#chapter-iii) \
    3.1. [Part 1](#part-1-working-with-the-cat-utility)  
    3.2. [Part 2](#part-2-working-with-grep-utility)  
-   3.3. [Part 3](#part-3-bonus-implementation-of-some-grep-utility-flags)
+   3.3. [Part 3](#part-3-bonus-implementation-of-some-grep-utility-flags)  
+   3.4. [Part 4](#part-4-bonus-implementation-of-grep-utility-flag-combinations)
 
 
 ## Preamble
@@ -137,6 +137,14 @@ You need to develop the grep utility:
 
 Bonus assignment for extra points. You need to develop the grep utility:
 - Support of all flags, including: -h, -s, -f, -o
+- Only pcre or regex libraries can be used for regular expressions
+- The source, header and make files must be placed in the src/grep/ directory
+- The resulting executable file must be placed in the directory src/grep/ and named s21_grep
+
+## Part 4. Bonus. Implementation of grep utility flag combinations
+
+Bonus assignment for extra points. You need to develop the grep utility:
+- Support of all flags, including their combinations
 - Only pcre or regex libraries can be used for regular expressions
 - The source, header and make files must be placed in the src/grep/ directory
 - The resulting executable file must be placed in the directory src/grep/ and named s21_grep
