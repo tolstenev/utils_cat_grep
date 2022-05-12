@@ -124,7 +124,7 @@ You need to develop a cat utility:
 ## Part 2. Working with grep utility
 
 You need to develop the grep utility:
-- Support of the following flags:  -e, -i, -v, -c, -l, -n
+- Support of the following flags: `-e`, `-i`, `-v`, `-c`, `-l`, `-n`
 - Only pcre or regex libraries can be used for regular expressions
 - The source, header and make files must be placed in the src/grep/ directory
 - The resulting executable file must be placed in the directory src/grep/ and named s21_grep
@@ -132,7 +132,7 @@ You need to develop the grep utility:
 ## Part 3. Bonus. Implementation of some grep utility flags
 
 Bonus assignment for extra points. You need to develop the grep utility:
-- Support of all flags, including: -h, -s, -f, -o
+- Support of all flags, including: `-h`, `-s`, `-f`, `-o`
 - Only pcre or regex libraries can be used for regular expressions
 - The source, header and make files must be placed in the src/grep/ directory
 - The resulting executable file must be placed in the directory src/grep/ and named s21_grep
@@ -140,7 +140,7 @@ Bonus assignment for extra points. You need to develop the grep utility:
 ## Part 4. Bonus. Implementation of grep utility flag combinations
 
 Bonus assignment for extra points. You need to develop the grep utility:
-- Support of all flags, including their combinations
+- Support of all flags, including their _pair_ combinations (e.g. `-iv`, `-in`)
 - Only pcre or regex libraries can be used for regular expressions
 - The source, header and make files must be placed in the src/grep/ directory
 - The resulting executable file must be placed in the directory src/grep/ and named s21_grep
