@@ -10,11 +10,16 @@ devnull_stdout = sys.stdout
 
 
 def get_source_filenames():
-    files = os.listdir(PATH_TO_PROJECT + '/src')
+    files_cat = os.listdir(PATH_TO_PROJECT + '/src/cat')
+    files_grep = os.listdir(PATH_TO_PROJECT + '/src/grep')
     arr_of_files = []
-    for file in files:
+    for file in files_cat:
         if file.find('.') != -1 and file[file.find('.') + 1] == 'c':
-            arr_of_files.append(file)
+            arr_of_files.append('cat/' + file)
+    for file in files_grep:
+        if file.find('.') != -1 and file[file.find('.') + 1] == 'c':
+            arr_of_files.append('grep/' + file)
+
     return arr_of_files
 
 
@@ -39,11 +44,17 @@ def style_test_result(arr_of_files):
             return False
 
     delete_cpplint_config()
+
     return True
 
 
-arr_of_files = get_source_filenames()
-if style_test_result(arr_of_files):
-    print('Style test: OK\n1')
-else:
-    print('Style test: FAIL\n0')
+def run():
+    arr_of_files = get_source_filenames()
+
+    if style_test_result(arr_of_files):
+        print('Style test: OK\n1')
+    else:
+        print('Style test: FAIL\n0')
+
+
+run()
