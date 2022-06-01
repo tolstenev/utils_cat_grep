@@ -20,16 +20,12 @@ OBJS	:= $(SRCS:.c=.o)
 all: s21_cat
 
 s21_cat:
-	$(CC) $(CFLAGS) $(NAME).c -o $(UTILITY)
+	@$(CC) $(CFLAGS) $(NAME).c -o $(UTILITY)
 
-#s21_cat: $(OBJS)
-#	$(CC) $(CFLAGS) $(NAME).c -o $(UTILITY)
 
-#%.o: %.c
-#	$(CC) $(CFLAGS) -c $< -o $@
-
-#test: $(NAME)
-#	./$(NAME)
+test: $(NAME)
+	@./$(NAME) ../../datasets/abcdef.txt
+	@./$(NAME) ../../datasets/no_file.txt
 
 check: $(NAME)
 	@echo ---------------------CPPCHECK---------------------

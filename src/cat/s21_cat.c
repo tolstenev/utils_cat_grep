@@ -8,9 +8,24 @@
 #include <stdio.h>
 
 int main(int argc, char **argv) {
+    int result = 0;
+
     if (argc > 1) {
-        printf("%s", argv[1]);
+
+        FILE *file;
+        file = fopen(argv[1], "r");
+
+        if (file != NULL) {
+            char c;
+            while ( (c = fgetc(file)) != EOF) {
+                printf("%c", c);
+            }
+        } else {
+            result = 2;
+            printf("No such file %s\n", argv[1]);
+        }
+        fclose(file);
     }
-    return (0);
+    return (result);
 }
 
