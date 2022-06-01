@@ -6,6 +6,7 @@
  */
 
 #include <stdio.h>
+#include "../common/s21_bool.h"
 
 int main(int argc, char **argv) {
     int result = 0;
@@ -16,9 +17,11 @@ int main(int argc, char **argv) {
         file = fopen(argv[1], "r");
 
         if (file != NULL) {
-            char c;
-            while ( (c = fgetc(file)) != EOF) {
-                printf("%c", c);
+            int c;
+            while (s21_true) {
+                c = fgetc(file);
+                if (feof(file) || ferror(file)) break;
+                putchar(c);
             }
         } else {
             result = 2;

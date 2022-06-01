@@ -11,9 +11,9 @@ CC			:= gcc
 CFLAGS		:= -std=c11 -Wall -Werror -Wextra
 TEST_FILE	:= ../../datasets/test_file1.txt
 
-SRCS	:= s21_cat.c	\
+SRCS		:= s21_cat.c	\
 
-OBJS	:= $(SRCS:.c=.o)
+OBJS		:= $(SRCS:.c=.o)
 
 .PHONY: all s21_cat test check clean fclean re
 
@@ -25,7 +25,7 @@ s21_cat:
 
 test: $(NAME)
 	@./$(NAME) ../../datasets/abcdef.txt
-	@./$(NAME) ../../datasets/no_file.txt
+#	@./$(NAME) ../../datasets/no_file.txt
 
 check: $(NAME)
 	@echo ---------------------CPPCHECK---------------------

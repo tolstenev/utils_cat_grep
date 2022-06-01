@@ -49,3 +49,8 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+*.xml
+*.iml
+.idea
+.DS_Store
