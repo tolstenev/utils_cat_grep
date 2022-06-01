@@ -24,7 +24,7 @@ s21_cat:
 
 
 test: $(NAME)
-	@./$(NAME) ../../datasets/abcdef.txt
+	@./$(NAME) ../../datasets/abcdef.txt ../../datasets/second.txt
 #	@./$(NAME) ../../datasets/no_file.txt
 
 check: $(NAME)

@@ -10,11 +10,11 @@
 
 int main(int argc, char **argv) {
     int result = 0;
+    int count = 1;
 
-    if (argc > 1) {
-
+    while (count <= argc) {
         FILE *file;
-        file = fopen(argv[1], "r");
+        file = fopen(argv[count], "r");
 
         if (file != NULL) {
             int c;
@@ -23,11 +23,12 @@ int main(int argc, char **argv) {
                 if (feof(file) || ferror(file)) break;
                 putchar(c);
             }
-        } else {
+        } /*else {
             result = 2;
-            printf("No such file %s\n", argv[1]);
-        }
+            printf("No such file %s\n", argv[count]);
+        }*/
         fclose(file);
+        count++;
     }
     return (result);
 }
