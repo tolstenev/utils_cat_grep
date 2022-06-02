@@ -24,16 +24,17 @@ s21_cat:
 
 
 test: $(NAME)
-	@./$(NAME) ../../datasets/abcdef.txt ../../datasets/second.txt
-#	@./$(NAME) ../../datasets/no_file.txt
+#	@./$(NAME) ../../datasets/abcdef.txt
+	@./$(NAME) ../../datasets/first.txt ../../datasets/second.txt
+	@./$(NAME) ../../datasets/no_file.txt
 
 check: $(NAME)
 	@echo ---------------------CPPCHECK---------------------
-	cppcheck *.c
+	@cppcheck *.c
 	@echo ---------------------CPPLINT----------------------
-	cp ../materials/linters/CPPLINT.cfg CPPLINT.cfg
-	python3 ../materials/linters/cpplint.py --extension=c *.c
-	rm CPPLINT.cfg
+	@cp ../../materials/linters/CPPLINT.cfg CPPLINT.cfg
+	@python3 ../../materials/linters/cpplint.py --extension=c *.c
+	@rm CPPLINT.cfg
 
 clean:
 	rm -rf $(OBJS)
