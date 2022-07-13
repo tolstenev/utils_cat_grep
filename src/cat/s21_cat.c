@@ -7,30 +7,28 @@
 
 #include <stdio.h>
 #include <stdbool.h>
-// #include "../common/s21_bool.h"
 
 int print_file(FILE *file);
 
 typedef struct {
-  int opt_b;
-  int opt_e;
-  int opt_n;
-  int opt_s;
-  int opt_t;
+  int b;
+  int e;
+  int n;
+  int s;
+  int t;
 } Options;
 
 int main(int argc, char **argv) {
     int result = 0;
-    int count = 1;
-    Options Flag;
-    Flag.opt_b = Flag.opt_e = Flag.opt_n = Flag.opt_s = Flag.opt_t = 0;
+    unsigned int counter = 1, number_of_arg = argc;
+    Options Opt;
+    Opt.b = Opt.e = Opt.n = Opt.s = Opt.t = 0;
 
-
-    while (count < argc) {
+    while (counter < number_of_arg) {
         FILE *file;
-        file = fopen(argv[count], "r");
+        file = fopen(argv[counter], "r");
         result = print_file(file);
-        count++;
+        counter++;
         fclose(file);
     }
     return (result);
@@ -46,7 +44,7 @@ int print_file(FILE *file) {
             putchar(c);
         }
     } else {
-            error = 2;  // Раскоментировать в конце для корректной работы
+//            error = 2;  // Раскоментировать в конце для корректной работы
         puts("No such file");
     }
     return error;

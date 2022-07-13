@@ -24,9 +24,10 @@ s21_cat:
 
 
 test: $(NAME)
-#	@./$(NAME) ../../datasets/abcdef.txt
-	@./$(NAME) ../../datasets/first.txt ../../datasets/second.txt
-	@./$(NAME) ../../datasets/no_file.txt
+	@./$(NAME) ../../datasets/abcdef.txt
+#	@./$(NAME) -n ../../datasets/abcdef.txt
+#	@./$(NAME) ../../datasets/first.txt ../../datasets/second.txt
+#	@./$(NAME) ../../datasets/no_file.txt
 
 check: $(NAME)
 	@echo ---------------------CPPCHECK---------------------
