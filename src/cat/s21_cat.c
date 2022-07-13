@@ -18,6 +18,17 @@ typedef struct {
   int t;
 } Options;
 
+// TODO: посмотереть уроки по bash-скриптам
+// TODO: написать хорошие и понятные тесты на один флаг с просмотром выводимой в файл информацией
+// если тест не пройден, то файлы не удаляются, а сохранятются.
+// в названии, либо внутри пишется комбинация, при которой не совпало
+// TODO: прогнать код Миши
+// TODO: написать код этого флага у себя
+// TODO:
+
+
+
+
 int main(int argc, char **argv) {
     int result = 0;
     unsigned int counter = 1, number_of_arg = argc;
@@ -38,10 +49,10 @@ int print_file(FILE *file) {
     int error = 0;
     if (file != NULL) {
         int c;
-        while (true) {
-            c = fgetc(file);
-            if (feof(file) || ferror(file)) break;
+        while (!(feof(file) || ferror(file))) {
+//            if (feof(file) || ferror(file)) break;
             putchar(c);
+            c = fgetc(file);
         }
     } else {
 //            error = 2;  // Раскоментировать в конце для корректной работы

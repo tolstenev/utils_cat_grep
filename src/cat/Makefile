@@ -6,45 +6,51 @@
 #
 
 NAME		:= s21_cat
+HEADER		:=
 UTILITY		:= $(NAME)
+
 CC			:= gcc
-CFLAGS		:= -std=c11 -Wall -Werror -Wextra
-TEST_FILE	:= ../../datasets/test_file1.txt
-
-SRCS		:= s21_cat.c	\
-
+CFLAGS		:= -std=c11 -pedantic -Wall -Werror -Wextra
+SRCS		:= s21_cat.c
 OBJS		:= $(SRCS:.c=.o)
+
+TEST_FILE	:= ../../datasets/test_file1.txt
 
 .PHONY: all s21_cat test check clean fclean re
 
 all: s21_cat
 
-s21_cat:
-	@$(CC) $(CFLAGS) $(NAME).c -o $(UTILITY)
+s21_cat: $(OBJS)
+		@$(CC) $(CFLAGS) $(NAME).c -o $(UTILITY)
 
+%.o: %.c $(HEADER)
+		$(CC) $(CFLAGS) -c $< -o $@
 
 test: $(NAME)
-	@./$(NAME) ../../datasets/abcdef.txt
-#	@./$(NAME) -n ../../datasets/abcdef.txt
-#	@./$(NAME) ../../datasets/first.txt ../../datasets/second.txt
-#	@./$(NAME) ../../datasets/no_file.txt
+		./test_cat.sh
+		@#./$(NAME) ../../datasets/bytes.txt
+#		@./$(NAME) ../../datasets/abcdef.txt
+#		@./$(NAME) -n ../../datasets/abcdef.txt
+#		@./$(NAME) ../../datasets/first.txt ../../datasets/second.txt
+#		@./$(NAME) ../../datasets/no_file.txt
 
 check: $(NAME)
-	@echo ---------------------CPPCHECK---------------------
-	@cppcheck *.c
-	@echo ---------------------CPPLINT----------------------
-	@cp ../../materials/linters/CPPLINT.cfg CPPLINT.cfg
-	@python3 ../../materials/linters/cpplint.py --extension=c *.c
-	@rm CPPLINT.cfg
+		@clear
+		@echo ---------------------CPPCHECK---------------------
+		cppcheck --enable=all --suppress=missingIncludeSystem . $(HEADER) $(SRCS)
+		@echo ---------------------CPPLINT----------------------
+		cp ../materials/linters/CPPLINT.cfg CPPLINT.cfg
+		python3 ../materials/linters/cpplint.py --extension=c $(SRCS) $(HEADER)
+		rm CPPLINT.cfg
 
 clean:
-	rm -rf $(OBJS)
+		rm -rf $(OBJS) *.txt
 
 fclean: clean
-	rm -rf $(NAME)
+		rm -rf $(NAME)
 
 re:
-	$(MAKE) fclean
-	$(MAKE) all
+		$(MAKE) fclean
+		$(MAKE) all
 
 
