@@ -3,15 +3,15 @@
 PATH_TO="../../datasets/"
 #FILE = bytes.txt
 FILE="first.txt"
-flags="-s"
+flags=""
 
 touch 42.txt
 rm *.txt
 
-## Вывод cat без флагов
-#echo "cat $PATH_TO$FILE"
-#cat $PATH_TO$FILE
-#echo ""
+# Вывод cat без флагов
+echo "cat $PATH_TO$FILE"
+cat $PATH_TO$FILE
+echo ""
 
 make
 clear
@@ -19,21 +19,24 @@ clear
 #for flags in -b -e -n -s -t -v
 #do
 #    echo "cat $flags $PATH_TO$FILE"
-    echo "--------------"
+    echo "------------------------"
     echo "cat $flags"
-    cat $flags $PATH_TO$FILE
-    echo ""
+    cat -s $flags $PATH_TO$FILE
     echo "--------------"
     echo "s21_cat $flags"
     ./s21_cat $flags $PATH_TO$FILE
-    echo ""
     echo "--------------"
-    cat $flags $PATH_TO$FILE > orig.txt
+    cat -s $flags $PATH_TO$FILE > orig.txt
     ./s21_cat $flags $PATH_TO$FILE > s21_.txt
     diff -s orig.txt s21_.txt
     echo "--------------"
 #done
 
+## Вывод всех флагов одновременно
+#    flags="-b -e -n -s -t -v"
+#    echo "--------------"
+#    echo "cat $flags"
+#    cat $flags $PATH_TO$FILE
 
 #COUNTER_SUCCESS=0
 #COUNTER_FAIL=0
