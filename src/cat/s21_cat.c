@@ -12,14 +12,25 @@ int main(int argc, char **argv) {
     unsigned int counter = 1, number_of_arg = argc;
     Options Opt;
     Opt.b = Opt.e = Opt.n = Opt.s = Opt.t = 0;
-    char *usagefile = "USAGE.txt";
+//    char *usagefile = "USAGE.txt";
 
     for (int i = 0; i < argc; ++i) {
         if (argv[i][0] == '-') {
             size_t arg_len = strlen(argv[i]);
             char *flag = argv[i] + 2;
-            for (size_t j = 1; j < arg_len; ++j) {
+            for (size_t j = 1; (j < arg_len) && errcode == OK; ++j) {
                 switch (argv[i][j]) {
+                    case '-':
+                              if (strcmp(flag, "help") == 0) puts("HELP YOURSELF");
+                         else if (strcmp(flag, "number") == 0)           Opt.n = 1;
+                         else if (strcmp(flag, "number-nonblank") == 0)  Opt.b = 1;
+                         else if (strcmp(flag, "squezze-blank") == 0)    Opt.s = 1;
+                         else if (strcmp(flag, "show-nonprinting") == 0) Opt.v = 1;
+                         else if (strcmp(flag, "show-ends") == 0)        Opt.e = 1;
+                         else if (strcmp(flag, "show-tabs") == 0)        Opt.t = 1;
+                         else if (strcmp(flag, "show-all") == 0)
+                             Opt.v = Opt.t = Opt.e = 1;
+                         break;
                     case 'n': Opt.n = 1;                 break;
                     case 'b': Opt.b = 1;                 break;
                     case 's': Opt.s = 1;                 break;
@@ -29,28 +40,22 @@ int main(int argc, char **argv) {
                     case 'e': Opt.v = Opt.e = 1;         break;
                     case 't': Opt.v = Opt.t = 1;         break;
                     case 'A': Opt.v = Opt.t = Opt.e = 1; break;
-                    case '-':
-                              if (!strcmp(flag, "help")) main(1, &usagefile);
-                         else if (!strcmp(flag, "number"))           Opt.n = 1;
-                         else if (!strcmp(flag, "number-nonblank"))  Opt.b = 1;
-                         else if (!strcmp(flag, "squezze-blank"))    Opt.s = 1;
-                         else if (!strcmp(flag, "show-nonprinting")) Opt.v = 1;
-                         else if (!strcmp(flag, "show-ends"))        Opt.e = 1;
-                         else if (!strcmp(flag, "show-tabs"))        Opt.t = 1;
-                         else if (!strcmp(flag, "show-all"))
-                             Opt.v = Opt.t = Opt.e = 1;
-                         break;
                         // TODO(me): добавить обработку ошибки, если флаги некорректные
                         // TODO(me): не работает вывод справки по флагу  help
                         // TODO(me): в целом флаги как будто не читаются
-//                    default:
-//                        printf("s21_cat: invalid option -- %c", argv[i][j]);
-//                        puts("Try 's21_cat --help' for more information.");
-//                        errcode = ERROR;
+                    default:
+                        printf("s21_cat: invalid option -- %c\n", argv[i][j]);
+                        puts("Try 's21_cat --help' for more information.");
+                        errcode = ERROR;
                 }
             }
         }
     }
+
+    // TODO(me): переписать основную часть, чтобы в цикле перебирались файлнэймы,
+    // а сами фалы открывались уже внутри функции.
+    // TODO(me): соответственно изменить сигнатуру функций
+    // TODO(me): сделать это всё для того, чтобы одной функций в начале вызвать функцию и открыть файл со справкой
 
     if (errcode == OK) {
         counter = 1;
@@ -59,8 +64,8 @@ int main(int argc, char **argv) {
             FILE *file;
             file = fopen(argv[counter], "r");
             errcode = s21_print_file(file, &Opt);
-            counter++;
             fclose(file);
+            counter++;
         }
     }
     return (errcode);
