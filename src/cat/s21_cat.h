@@ -10,6 +10,7 @@
 #define SRC_CAT_S21_CAT_H_
 
 #include <stdio.h>
+#include <string.h>
 #include <stdbool.h>
 
 typedef struct {
@@ -18,6 +19,7 @@ typedef struct {
   int n;
   int s;
   int t;
+  int v;
 } Options;
 
 enum {

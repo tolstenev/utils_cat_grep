@@ -8,31 +8,62 @@
 #include "s21_cat.h"
 
 int main(int argc, char **argv) {
-    int result = 0;
+    int errcode = OK;
     unsigned int counter = 1, number_of_arg = argc;
     Options Opt;
     Opt.b = Opt.e = Opt.n = Opt.s = Opt.t = 0;
+    char *usagefile = "USAGE.txt";
 
-    if (argv[counter][0] == '-') {
-        while (argc) {
-            if (argv[counter][1] == 's') {
-                Opt.s = 1;
+    for (int i = 0; i < argc; ++i) {
+        if (argv[i][0] == '-') {
+            size_t arg_len = strlen(argv[i]);
+            char *flag = argv[i] + 2;
+            for (size_t j = 1; j < arg_len; ++j) {
+                switch (argv[i][j]) {
+                    case 'n': Opt.n = 1;                 break;
+                    case 'b': Opt.b = 1;                 break;
+                    case 's': Opt.s = 1;                 break;
+                    case 'v': Opt.v = 1;                 break;
+                    case 'E': Opt.e = 1;                 break;
+                    case 'T': Opt.t = 1;                 break;
+                    case 'e': Opt.v = Opt.e = 1;         break;
+                    case 't': Opt.v = Opt.t = 1;         break;
+                    case 'A': Opt.v = Opt.t = Opt.e = 1; break;
+                    case '-':
+                              if (!strcmp(flag, "help")) main(1, &usagefile);
+                         else if (!strcmp(flag, "number"))           Opt.n = 1;
+                         else if (!strcmp(flag, "number-nonblank"))  Opt.b = 1;
+                         else if (!strcmp(flag, "squezze-blank"))    Opt.s = 1;
+                         else if (!strcmp(flag, "show-nonprinting")) Opt.v = 1;
+                         else if (!strcmp(flag, "show-ends"))        Opt.e = 1;
+                         else if (!strcmp(flag, "show-tabs"))        Opt.t = 1;
+                         else if (!strcmp(flag, "show-all"))
+                             Opt.v = Opt.t = Opt.e = 1;
+                         break;
+                        // TODO(me): добавить обработку ошибки, если флаги некорректные
+                        // TODO(me): не работает вывод справки по флагу  help
+                        // TODO(me): в целом флаги как будто не читаются
+//                    default:
+//                        printf("s21_cat: invalid option -- %c", argv[i][j]);
+//                        puts("Try 's21_cat --help' for more information.");
+//                        errcode = ERROR;
+                }
             }
-            argc--;
         }
     }
 
-    counter = 1;
-    argc = number_of_arg;
-
-    while (counter < number_of_arg) {
-        FILE *file;
-        file = fopen(argv[counter], "r");
-        result = s21_print_file(file, &Opt);
-        counter++;
-        fclose(file);
+    if (errcode == OK) {
+        counter = 1;
+        argc = number_of_arg;
+        while (counter < number_of_arg) {
+            FILE *file;
+            file = fopen(argv[counter], "r");
+            errcode = s21_print_file(file, &Opt);
+            counter++;
+            fclose(file);
+        }
     }
-    return (result);
+    return (errcode);
 }
 
 /**
@@ -46,7 +77,7 @@ int s21_file_is_exist(FILE *file) {
 }
 
 int s21_print_file(FILE *file, Options *Opt) {
-    int errcode = 0;
+    int errcode = OK;
 
     if (NULL == file) {
         errcode = NO_SUCH_FILE;
@@ -55,8 +86,6 @@ int s21_print_file(FILE *file, Options *Opt) {
         int c = fgetc(file);
         // Пока файл существует, проводим анализ флагов и соответствующий вывод
         while (s21_file_is_exist(file)) {
-
-            // Получили код символа
             // Если сразу встретили перенос каретки и установлен флаг '-s', то
             // заменяем набор пустых строк одной пустой строкой
             if (Opt->s == 1 && c == '\n') {
