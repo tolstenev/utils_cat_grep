@@ -6,7 +6,7 @@
 #
 
 NAME		:= s21_cat
-HEADER		:=
+HEADER		:= s21_cat.h
 UTILITY		:= $(NAME)
 
 CC			:= gcc
@@ -39,8 +39,8 @@ check: $(NAME)
 		@echo ---------------------CPPCHECK---------------------
 		cppcheck --enable=all --suppress=missingIncludeSystem . $(HEADER) $(SRCS)
 		@echo ---------------------CPPLINT----------------------
-		cp ../materials/linters/CPPLINT.cfg CPPLINT.cfg
-		python3 ../materials/linters/cpplint.py --extension=c $(SRCS) $(HEADER)
+		cp ../../materials/linters/CPPLINT.cfg CPPLINT.cfg
+		python3 ../../materials/linters/cpplint.py --extension=c $(SRCS) $(HEADER)
 		rm CPPLINT.cfg
 
 clean:

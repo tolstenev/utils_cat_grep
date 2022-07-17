@@ -5,32 +5,7 @@
  * yonnarge@student.21-school.ru
  */
 
-#include <stdio.h>
-#include <stdbool.h>
-
-typedef struct {
-  int b;
-  int e;
-  int n;
-  int s;
-  int t;
-} Options;
-
-int print_file(FILE *file, Options *Opt);
-int file_is_exist(FILE *file);
-
-
-
-// TODO: посмотереть уроки по bash-скриптам
-// TODO: написать хорошие и понятные тесты на один флаг с просмотром выводимой в файл информацией
-// если тест не пройден, то файлы не удаляются, а сохранятются.
-// в названии, либо внутри пишется комбинация, при которой не совпало
-// TODO: прогнать код Миши
-// TODO: написать код этого флага у себя
-// TODO:
-
-
-
+#include "s21_cat.h"
 
 int main(int argc, char **argv) {
     int result = 0;
@@ -38,10 +13,22 @@ int main(int argc, char **argv) {
     Options Opt;
     Opt.b = Opt.e = Opt.n = Opt.s = Opt.t = 0;
 
+    if (argv[counter][0] == '-') {
+        while (argc) {
+            if (argv[counter][1] == 's') {
+                Opt.s = 1;
+            }
+            argc--;
+        }
+    }
+
+    counter = 1;
+    argc = number_of_arg;
+
     while (counter < number_of_arg) {
         FILE *file;
         file = fopen(argv[counter], "r");
-        result = print_file(file, &Opt);
+        result = s21_print_file(file, &Opt);
         counter++;
         fclose(file);
     }
@@ -54,66 +41,50 @@ int main(int argc, char **argv) {
  * @return 0 - Конец файла или ошибка;
  *         Ненулевое значение - ОК.
  */
-int file_is_exist(FILE *file) {
+int s21_file_is_exist(FILE *file) {
     return !(feof(file) || ferror(file));
 }
 
-int print_file(FILE *file, Options *Opt) {
-    int error = 0;
-    // Просто тестовое выставление флага. Убрать в итоге
-    Opt->s = 1;
+int s21_print_file(FILE *file, Options *Opt) {
+    int errcode = 0;
 
     if (NULL == file) {
-//            error = 2;  // Раскоментировать в конце для корректной работы
-        puts("No such file");
+        errcode = NO_SUCH_FILE;
     } else {
-        int c = 0;
-        int k = 0;
-        while (file_is_exist(file)) {
-            c = fgetc(file);
+        // Инициализация переменной, которая будет хранить код текущего символа
+        int c = fgetc(file);
+        // Пока файл существует, проводим анализ флагов и соответствующий вывод
+        while (s21_file_is_exist(file)) {
+
+            // Получили код символа
+            // Если сразу встретили перенос каретки и установлен флаг '-s', то
+            // заменяем набор пустых строк одной пустой строкой
             if (Opt->s == 1 && c == '\n') {
+                // Инициализация переменной, которая будет хранить код
+                // следующего символа
                 int next_char = fgetc(file);
+                // Если следующий символ тоже '\n', то проверяем все последующие символы,
+                // пока не встретим другой символ, каждый раз переопределяя текущий символ
                 if (next_char == '\n') {
                     while (next_char == '\n') {
-                        c = next_char;
+                        c = next_char;  // TODO(me): мб убрать эту строку?
                         next_char = fgetc(file);
                     }
+                    // Когда набор пустых строк закончился, то выводим одну пустую строку
                     putchar('\n');
                 }
-                if (file_is_exist(file))
+                // Если следующий символ окажется обычным символом и файл существует,
+                // то возвращаем указатель file на одну позицию назад (на текущий символ)
+                if (s21_file_is_exist(file))
                     fseek(file, -1, SEEK_CUR);
-
             }
+            // Выводим текущий символ и считываем следующий
             putchar(c);
+            c = fgetc(file);
         }
     }
 
-    /**
-     * не работает этот флаг эс
-     * надо взять текущий символ
-     * если он перенос строки
-     *          взять следующий символ
-     *     если нет, то
-     * если след. тоже перенос строки
-     * взять следующий символ, и так проверять, пока не встретим другой символ
-     *
-     * если встретили другой символ, то вывели один перенос
-     * проверили, если встреченный символ не конец файла, то вернули указатель на один символ назад
-     */
-
-
-//    if (Opt->s == 1) && ch == '\n') {
-//
-//        while (ch == '\n') {
-//            if (flags->e == 1 && flags->s == 0)
-//                printf("$");
-//            if (flags->s == 0 && flags->b == 1)
-//                printf("%c", ch);
-//            ch = (char) fgetc(file);
-//        }
-//    }
-
-    return error;
+    return (errcode);
 }
 
 
