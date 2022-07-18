@@ -10,8 +10,9 @@
 int main(int argc, char **argv) {
     int errcode = OK;
 //    unsigned int counter = 1, number_of_arg = argc;
+//    Options Opt = {0};  // TODO(me): мб стоит так инициализировать?
     Options Opt;
-    Opt.b = Opt.e = Opt.n = Opt.s = Opt.t = 0;
+    Opt.b = Opt.e = Opt.n = Opt.s = Opt.t = Opt.v = 0;
 
     for (int i = 0; i < argc; ++i) {
         if (argv[i][0] == '-') {
@@ -78,7 +79,14 @@ int s21_print_file(char *file_name, Options *Opt) {
     } else {
         // Инициализация переменной, которая будет хранить код текущего символа
         int c = fgetc(file);
-        // Пока файл существует, анализируем флаги и делаем соответствующий вывод
+        unsigned int num_str = 0;
+
+        if (Opt->n == 1 && Opt->b == 1)
+            Opt->n = 0;
+
+        if ((Opt->n == 1 || Opt->b == 1) && (c == '\n'))
+            printf("%6u  ", ++num_str);
+
         while (s21_file_is_exist(file)) {
             // Если сразу встретили перенос каретки и установлен флаг '-s', то
             // заменяем набор пустых строк одной пустой строкой
@@ -109,6 +117,7 @@ int s21_print_file(char *file_name, Options *Opt) {
 
             // Выводим текущий символ и считываем следующий
             putchar(c);
+            if ((Opt->n == 1) && (c == '\n') /*&& !s21_file_is_exist(file)*/) printf("%6u  ", ++num_str);
             c = fgetc(file);
         }
     }

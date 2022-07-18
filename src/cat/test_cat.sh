@@ -3,9 +3,10 @@
 PATH_TO="../../datasets/"
 #FILE = bytes.txt
 FILE="first.txt"
+DIR_TRACES="_traces/"
 #flags=""
 #flags="-s"
-flags="-Es"
+flags="-n"
 
 touch 42.txt
 rm *.txt
@@ -18,6 +19,9 @@ rm *.txt
 clear
 make
 
+rm -rf $DIR_TRACES
+mkdir $DIR_TRACES
+
 #for flags in -b -e -n -s -t -v
 #do
 #    echo "cat $flags $PATH_TO$FILE"
@@ -28,9 +32,8 @@ make
     echo "s21_: s21_cat $flags"
     ./s21_cat $flags $PATH_TO$FILE
     echo "--------------"
-    cat $flags $PATH_TO$FILE > orig.txt
-    ./s21_cat $flags $PATH_TO$FILE > s21_.txt
-    diff -s orig.txt s21_.txt
+    cd $DIR_TRACES && cat $flags ../$PATH_TO$FILE > orig$flags.txt && ../s21_cat $flags ../$PATH_TO$FILE > s21$flags.txt
+    diff -s orig$flags.txt s21$flags.txt
     echo "--------------"
 #done
 

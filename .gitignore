@@ -54,3 +54,5 @@ dkms.conf
 *.iml
 .idea
 .DS_Store
+_traces/
+s21_cat
