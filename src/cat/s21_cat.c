@@ -84,10 +84,10 @@ int s21_print_file(char *file_name, Options *Opt) {
         if (Opt->n == 1 && Opt->b == 1)
             Opt->n = 0;
 
-        if ((Opt->n == 1 || Opt->b == 1) && (c == '\n'))
-            printf("%6u  ", ++num_str);
+        if (Opt->n == 1 || Opt->b == 1)
+            printf("%6u\t", ++num_str);
 
-        while (s21_file_is_exist(file)) {
+        while (s21_file_is_exist(file) && errcode == OK) {
             // Если сразу встретили перенос каретки и установлен флаг '-s', то
             // заменяем набор пустых строк одной пустой строкой
             if (c == '\n') {
@@ -105,6 +105,7 @@ int s21_print_file(char *file_name, Options *Opt) {
                         // Когда набор пустых строк закончился, то выводим одну пустую строку
                         if (Opt->e == 1) putchar('$');
                         putchar('\n');
+                        if (Opt->n == 1) printf("%6u\t", ++num_str);
                     }
                     // Если следующий символ окажется обычным символом и файл существует,
                     // то возвращаем указатель file на одну позицию назад (на текущий символ)
@@ -117,7 +118,14 @@ int s21_print_file(char *file_name, Options *Opt) {
 
             // Выводим текущий символ и считываем следующий
             putchar(c);
-            if ((Opt->n == 1) && (c == '\n') /*&& !s21_file_is_exist(file)*/) printf("%6u  ", ++num_str);
+            if ((Opt->n == 1) && (c == '\n')) {
+                fgetc(file);
+                if (s21_file_is_exist(file))
+                    printf("%6u\t", ++num_str);
+                else
+                    errcode = STOP;
+                fseek(file, -1, SEEK_CUR);
+            }
             c = fgetc(file);
         }
     }
