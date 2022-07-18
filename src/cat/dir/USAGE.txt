@@ -1,10 +1,6 @@
 Usage: s21_cat [option...] [file...]
 Concatenate file(s) to standard output.
 
-
-
-
-
   -A, --show-all           equivalent to -vET
   -b, --number-nonblank    number nonempty output lines, overrides -n
   -e                       equivalent to -vE

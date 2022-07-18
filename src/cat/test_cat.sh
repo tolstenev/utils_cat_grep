@@ -3,7 +3,7 @@
 PATH_TO="../../datasets/"
 #FILE = bytes.txt
 FILE="first.txt"
-flags="--squezze-blank"
+flags=""
 
 touch 42.txt
 rm *.txt
