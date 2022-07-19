@@ -84,7 +84,7 @@ int s21_print_file(char *file_name, Options *Opt) {
         if (Opt->n == 1 && Opt->b == 1)
             Opt->n = 0;
 
-        if (Opt->n == 1 || Opt->b == 1)
+        if (Opt->n == 1 || (Opt->b == 1 && c != '\n'))
             printf("%6u\t", ++num_str);
 
         while (s21_file_is_exist(file) && errcode == OK) {
@@ -114,7 +114,20 @@ int s21_print_file(char *file_name, Options *Opt) {
                 }
                 if (Opt->e == 1) putchar('$');
             }
-
+            if (Opt->t == 1 && c == '\t') {
+                putchar('^');
+                c += 64;
+            }
+            if (Opt->v == 1) {
+                if ((0 <= c && c <= 8) || (11 <= c && c <= 30)) {
+                    putchar('^');
+                    c += 64;
+                }
+                if (c == 127) {
+                    putchar('^');
+                    c -= 64;
+                }
+            }
 
             // Выводим текущий символ и считываем следующий
             putchar(c);

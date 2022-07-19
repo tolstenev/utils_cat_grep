@@ -6,7 +6,7 @@ FILE="first.txt"
 DIR_TRACES="_traces/"
 #flags=""
 #flags="-s"
-flags="-sn"
+flags="-"
 
 touch 42.txt
 rm *.txt
