@@ -6,7 +6,10 @@ FILE="first.txt"
 DIR_TRACES="_traces/"
 #flags=""
 #flags="-s"
-flags="-"
+#flags="-b"
+#flags="-n"
+#flags="-e"
+flags="-vsnet"
 
 touch 42.txt
 rm *.txt
