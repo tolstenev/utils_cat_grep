@@ -9,67 +9,48 @@
 
 int main(int argc, char **argv) {
     int errcode = OK;
-    int optcode = OK;
-    Options Opt;
-    Opt.b = Opt.e = Opt.n = Opt.s = Opt.t = Opt.v = 0;
+    int optcode = CLEAR;
+    Options Opt = {0, 0, 0, 0, 0, 0};
 
-    for (int i = 0; i < argc; ++i) {
+    for (int i = 1; i < argc; ++i) {
+
         if (argv[i][0] == '-') {
+
             size_t arg_len = strlen(argv[i]);
-            char *flag = argv[i] + 2;
-            for (size_t j = 1; (j < arg_len) && optcode == OK && errcode != ERROR; ++j) {
+            char *opt_phrase = argv[i] + 2;
+
+            for (size_t j = 1; (j < arg_len) && optcode == CLEAR && errcode == OK; ++j) {
                 switch (argv[i][j]) {
-                    case '-': {
-                        if (strcmp(flag, "help") == 0) {
+                    case '-':
+                        if (strcmp(opt_phrase, "help") == 0) {
                             s21_print_file("dir/USAGE.txt", &Opt);
-                            optcode = HELP;
-                        } else if (strcmp(flag, "number") == 0) {
-                            Opt.n = 1;
-                            optcode = STOP;
-                        } else if (strcmp(flag, "number-nonblank") == 0) {
-                            Opt.b = 1;
-                            optcode = STOP;
-                        } else if (strcmp(flag, "squeeze-blank") == 0) {
-                            Opt.s = 1;
-                            optcode = STOP;
-                        } else if (strcmp(flag, "show-nonprinting") == 0) {
-                            Opt.v = 1;
-                            optcode = STOP;
-                        } else if (strcmp(flag, "show-ends") == 0) {
-                            Opt.e = 1;
-                            optcode = STOP;
-                        } else if (strcmp(flag, "show-tabs") == 0) {
-                            Opt.t = 1;
-                            optcode = STOP;
-                        } else if (strcmp(flag, "show-all") == 0) {
-                            Opt.v = Opt.t = Opt.e = 1;
-                            optcode = STOP;
+                            errcode = STOP;
+                        } else if (strcmp(opt_phrase, "number") == 0)           { Opt.n = optcode = SET;
+                        } else if (strcmp(opt_phrase, "number-nonblank") == 0)  { Opt.b = optcode = SET;
+                        } else if (strcmp(opt_phrase, "squeeze-blank") == 0)    { Opt.s = optcode = SET;
+                        } else if (strcmp(opt_phrase, "show-nonprinting") == 0) { Opt.v = optcode = SET;
+                        } else if (strcmp(opt_phrase, "show-ends") == 0)        { Opt.e = optcode = SET;
+                        } else if (strcmp(opt_phrase, "show-tabs") == 0)        { Opt.t = optcode = SET;
+                        } else if (strcmp(opt_phrase, "show-all") == 0)         { Opt.v =
+                                                                                  Opt.t =
+                                                                                  Opt.e =
+                                                                                  optcode = SET;
                         } else {
-                            printf("s21_cat: invalid option -- %s\n", flag);
+                            printf("s21_cat: invalid option -- %s\n", opt_phrase);
                             puts("Try 's21_cat --help' for more information.");
                             errcode = ERROR;
-                        }
-                        break;
-                    }
-                    case 'n': Opt.n = 1;
-                        break;
-                    case 'b': Opt.b = 1;
-                        break;
-                    case 's': Opt.s = 1;
-                        break;
-                    case 'v': Opt.v = 1;
-                        break;
-                    case 'E': Opt.e = 1;
-                        break;
-                    case 'T': Opt.t = 1;
-                        break;
-                    case 'e': Opt.v = Opt.e = 1;
-                        break;
-                    case 't': Opt.v = Opt.t = 1;
-                        break;
-                    case 'A': Opt.v = Opt.t = Opt.e = 1;
-                        break;
-                    default: printf("s21_cat: invalid option -- %c\n", argv[i][j]);
+                        }                                   break;
+                    case 'n': Opt.n = SET;                  break;
+                    case 'b': Opt.b = SET;                  break;
+                    case 's': Opt.s = SET;                  break;
+                    case 'v': Opt.v = SET;                  break;
+                    case 'E': Opt.e = SET;                  break;
+                    case 'T': Opt.t = SET;                  break;
+                    case 'e': Opt.v = Opt.e = SET;          break;
+                    case 't': Opt.v = Opt.t = SET;          break;
+                    case 'A': Opt.v = Opt.t = Opt.e = SET;  break;
+                    default:
+                        printf("s21_cat: invalid option -- %c\n", argv[i][j]);
                         puts("Try 's21_cat --help' for more information.");
                         errcode = ERROR;
                 }
@@ -78,19 +59,13 @@ int main(int argc, char **argv) {
         }
     }
 
-    for (int i = 1; (i < argc) && (errcode != ERROR); ++i)
+    for (int i = 1; (i < argc) && (errcode == OK); ++i)
         if (argv[i][0] != '-')
             errcode = s21_print_file(argv[i], &Opt);
 
     return (errcode);
 }
 
-/**
- * @brief Проверяет указатель file на конец файла или наличие ошибок
- * @param file
- * @return 0 - Конец файла или ошибка;
- *         Ненулевое значение - ОК.
- */
 int s21_file_is_exist(FILE *file) {
     return !(feof(file) || ferror(file));
 }
@@ -99,8 +74,8 @@ int s21_print_file(char *file_name, Options *Opt) {
     int errcode = OK;
     FILE *file = fopen(file_name, "r");
 
-    if (NULL == file) {
-        printf("s21_cat: No such file or directory'%s'\n", file_name);
+    if (file == NULL) {
+        printf("s21_cat: No such file or directory '%s'\n", file_name);
     } else {
         int c = fgetc(file);
         int next_char = fgetc(file);
@@ -183,8 +158,7 @@ int s21_print_file(char *file_name, Options *Opt) {
 
             c = fgetc(file);
         }
+        fclose(file);
     }
-
-    fclose(file);
     return (errcode);
 }

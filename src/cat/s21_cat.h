@@ -25,9 +25,13 @@ typedef struct {
 enum {
   OK = 0,
   ERROR = 1,
-  NO_SUCH_FILE = 2,
-  STOP = 3,
-  HELP = 4,
+  STOP = 2,
+};
+
+enum {
+  CLEAR = 0,
+  SET = 1,
+  HELP = 2,
 };
 
 int s21_print_file(char *file_name, Options *Opt);
