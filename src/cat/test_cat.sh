@@ -3,13 +3,14 @@
 PATH_TO="../../datasets/"
 #FILE = bytes.txt
 FILE="first.txt"
+#FILE="one_empty_line.txt"
 DIR_TRACES="_traces/"
 #flags=""
 #flags="-s"
 #flags="-b"
 #flags="-n"
 #flags="-e"
-flags="-vsnet"
+flags="--number"
 
 touch 42.txt
 rm *.txt

@@ -9,6 +9,7 @@
 
 int main(int argc, char **argv) {
     int errcode = OK;
+    int optcode = OK;
 //    unsigned int counter = 1, number_of_arg = argc;
 //    Options Opt = {0};  // TODO(me): мб стоит так инициализировать?
     Options Opt;
@@ -18,21 +19,25 @@ int main(int argc, char **argv) {
         if (argv[i][0] == '-') {
             size_t arg_len = strlen(argv[i]);
             char *flag = argv[i] + 2;
-            for (size_t j = 1; (j < arg_len) && errcode == OK; ++j) {
+            for (size_t j = 1; (j < arg_len) && optcode == OK && errcode != ERROR; ++j) {
                 switch (argv[i][j]) {
-                    case '-':
+                    case '-': {
                         if (strcmp(flag, "help") == 0) {
                             s21_print_file("dir/USAGE.txt", &Opt);
-                            errcode = STOP;
-                        } else if (strcmp(flag, "number") == 0) Opt.n = 1;
-                        else if (strcmp(flag, "number-nonblank") == 0) Opt.b = 1;
-                        else if (strcmp(flag, "squezze-blank") == 0) Opt.s = 1;
-                        else if (strcmp(flag, "show-nonprinting") == 0) Opt.v = 1;
-                        else if (strcmp(flag, "show-ends") == 0) Opt.e = 1;
-                        else if (strcmp(flag, "show-tabs") == 0) Opt.t = 1;
-                        else if (strcmp(flag, "show-all") == 0)
-                            Opt.v = Opt.t = Opt.e = 1;
+                            optcode = HELP;
+                        } else if (strcmp(flag, "number") == 0) {
+                            Opt.n = 1;
+                            optcode = STOP;
+                            // TODO(me): дописать флаги GNU
+                            // TODO(me): протестировать на GNU Linux
+                        } else {
+                            printf("s21_cat: invalid option -- %s\n", flag);
+                            puts("Try 's21_cat --help' for more information.");
+                            errcode = ERROR;
+                        }
+
                         break;
+                    }
                     case 'n': Opt.n = 1;
                         break;
                     case 'b': Opt.b = 1;
@@ -51,7 +56,7 @@ int main(int argc, char **argv) {
                         break;
                     case 'A': Opt.v = Opt.t = Opt.e = 1;
                         break;
-                    default:printf("s21_cat: invalid option -- %c\n", argv[i][j]);
+                    default: printf("s21_cat: invalid option -- %c\n", argv[i][j]);
                         puts("Try 's21_cat --help' for more information.");
                         errcode = ERROR;
                 }
@@ -59,7 +64,7 @@ int main(int argc, char **argv) {
         }
     }
 
-    for (int i = 1; (i < argc) && errcode == OK; ++i)
+    for (int i = 1; (i < argc) && (errcode != ERROR); ++i)
         if (argv[i][0] != '-')
             errcode = s21_print_file(argv[i], &Opt);
 
@@ -84,6 +89,7 @@ int s21_print_file(char *file_name, Options *Opt) {
         printf("s21_cat: No such file or directory'%s'\n", file_name);
     } else {
         int c = fgetc(file);
+        int next_char = fgetc(file);
         unsigned int num_str = 0;
 
         if (Opt->n == 1 && Opt->b == 1)
@@ -92,25 +98,33 @@ int s21_print_file(char *file_name, Options *Opt) {
         if (Opt->n == 1 || (Opt->b == 1 && c != '\n'))
             printf("%6u\t", ++num_str);
 
+        if (Opt->s == 1 && c == '\n' && next_char == '\n') {
+            while (next_char == '\n') next_char = fgetc(file);
+        }
+        if (c == '\n') {
+            if (Opt->e == 1) putchar('$');
+            putchar('\n');
+            c = next_char;
+            if (Opt->n == 1 || (Opt->b == 1 && next_char != '\n'))
+                printf("%6u\t", ++num_str);
+        } else {
+            fseek(file, -1, SEEK_CUR);
+        }
+
+
         while (s21_file_is_exist(file) && errcode == OK) {
             if (c == '\n') {
-
                 if (Opt->s == 1 || Opt->b == 1) {
-                    int next_char = fgetc(file);
+                    next_char = fgetc(file);
 
                     if (s21_file_is_exist(file)) {
                         if (next_char == '\n') {
                             if (Opt->s == 1) {
-
+                                if (Opt->e == 1) putchar('$');
+                                putchar('\n');
                                 while (next_char == '\n') {
-                                    c = next_char;
                                     next_char = fgetc(file);
                                 }
-
-                                if (Opt->e == 1) putchar('$');
-// TODO(me): флаг -s не обрабатывает несколько \n в начале файла
-                                putchar('\n');
-
                                 if (Opt->n == 1) printf("%6u\t", ++num_str);
                             }
                         }
@@ -132,7 +146,7 @@ int s21_print_file(char *file_name, Options *Opt) {
                 c += 64;
             }
             if (Opt->v == 1) {
-                if ((0 <= c && c <= 8) || (11 <= c && c <= 30)) {
+                if ((0 <= c && c <= 8) || (11 <= c && c <= 31)) {
                     putchar('^');
                     c += 64;
                 }
