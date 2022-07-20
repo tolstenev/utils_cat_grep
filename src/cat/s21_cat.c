@@ -10,8 +10,6 @@
 int main(int argc, char **argv) {
     int errcode = OK;
     int optcode = OK;
-//    unsigned int counter = 1, number_of_arg = argc;
-//    Options Opt = {0};  // TODO(me): мб стоит так инициализировать?
     Options Opt;
     Opt.b = Opt.e = Opt.n = Opt.s = Opt.t = Opt.v = 0;
 
@@ -28,14 +26,29 @@ int main(int argc, char **argv) {
                         } else if (strcmp(flag, "number") == 0) {
                             Opt.n = 1;
                             optcode = STOP;
-                            // TODO(me): дописать флаги GNU
-                            // TODO(me): протестировать на GNU Linux
+                        } else if (strcmp(flag, "number-nonblank") == 0) {
+                            Opt.b = 1;
+                            optcode = STOP;
+                        } else if (strcmp(flag, "squeeze-blank") == 0) {
+                            Opt.s = 1;
+                            optcode = STOP;
+                        } else if (strcmp(flag, "show-nonprinting") == 0) {
+                            Opt.v = 1;
+                            optcode = STOP;
+                        } else if (strcmp(flag, "show-ends") == 0) {
+                            Opt.e = 1;
+                            optcode = STOP;
+                        } else if (strcmp(flag, "show-tabs") == 0) {
+                            Opt.t = 1;
+                            optcode = STOP;
+                        } else if (strcmp(flag, "show-all") == 0) {
+                            Opt.v = Opt.t = Opt.e = 1;
+                            optcode = STOP;
                         } else {
                             printf("s21_cat: invalid option -- %s\n", flag);
                             puts("Try 's21_cat --help' for more information.");
                             errcode = ERROR;
                         }
-
                         break;
                     }
                     case 'n': Opt.n = 1;
@@ -61,6 +74,7 @@ int main(int argc, char **argv) {
                         errcode = ERROR;
                 }
             }
+            optcode = OK;
         }
     }
 

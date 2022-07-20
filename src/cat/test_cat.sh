@@ -10,7 +10,7 @@ DIR_TRACES="_traces/"
 #flags="-b"
 #flags="-n"
 #flags="-e"
-flags="--number"
+flags="--show-nonprinting"
 
 touch 42.txt
 rm *.txt
