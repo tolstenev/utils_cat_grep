@@ -15,8 +15,6 @@ CFLAGS		:= -std=c11 -pedantic -Wall -Werror -Wextra
 SRCS		:= $(NAME).c
 OBJS		:= $(SRCS:.c=.o)
 
-TEST_FILE	:= ../../datasets/test_file1.txt
-
 .PHONY: all s21_cat test check clean fclean re
 
 all: s21_cat
@@ -28,7 +26,7 @@ s21_cat: $(OBJS)
 		$(CC) $(CFLAGS) -c $< -o $@
 
 test: $(NAME)
-		./TEST_FILE
+		./$(TEST_FILE)
 		@#./$(NAME) ../../datasets/bytes.txt
 #		@./$(NAME) ../../datasets/abcdef.txt
 #		@./$(NAME) -n ../../datasets/abcdef.txt
