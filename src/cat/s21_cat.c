@@ -13,31 +13,27 @@ int main(int argc, char **argv) {
     Options Opt = {0, 0, 0, 0, 0, 0};
 
     for (int i = 1; i < argc; ++i) {
-
         if (argv[i][0] == '-') {
-
             size_t arg_len = strlen(argv[i]);
             char *opt_phrase = argv[i] + 2;
 
             for (size_t j = 1; (j < arg_len) && optcode == CLEAR && errcode == OK; ++j) {
                 switch (argv[i][j]) {
                     case '-':
-                        if (strcmp(opt_phrase, "help") == 0) {
+                        if (strcmp(opt_phrase, "help")                    == 0) {
                             s21_print_file("dir/USAGE.txt", &Opt);
                             errcode = STOP;
-                        } else if (strcmp(opt_phrase, "number") == 0)           { Opt.n = optcode = SET;
-                        } else if (strcmp(opt_phrase, "number-nonblank") == 0)  { Opt.b = optcode = SET;
-                        } else if (strcmp(opt_phrase, "squeeze-blank") == 0)    { Opt.s = optcode = SET;
+                        } else if (strcmp(opt_phrase, "number")           == 0) { Opt.n = optcode = SET;
+                        } else if (strcmp(opt_phrase, "number-nonblank")  == 0) { Opt.b = optcode = SET;
+                        } else if (strcmp(opt_phrase, "squeeze-blank")    == 0) { Opt.s = optcode = SET;
                         } else if (strcmp(opt_phrase, "show-nonprinting") == 0) { Opt.v = optcode = SET;
-                        } else if (strcmp(opt_phrase, "show-ends") == 0)        { Opt.e = optcode = SET;
-                        } else if (strcmp(opt_phrase, "show-tabs") == 0)        { Opt.t = optcode = SET;
-                        } else if (strcmp(opt_phrase, "show-all") == 0)         { Opt.v =
-                                                                                  Opt.t =
-                                                                                  Opt.e =
-                                                                                  optcode = SET;
+                        } else if (strcmp(opt_phrase, "show-ends")        == 0) { Opt.e = optcode = SET;
+                        } else if (strcmp(opt_phrase, "show-tabs")        == 0) { Opt.t = optcode = SET;
+                        } else if (strcmp(opt_phrase, "show-all")         == 0) { Opt.v = Opt.t = Opt.e =
+                                                                                          optcode = SET;
                         } else {
-                            printf("s21_cat: invalid option -- %s\n", opt_phrase);
-                            puts("Try 's21_cat --help' for more information.");
+                            printf("s21_cat: unrecognized option --%s\n", opt_phrase);
+                            puts("Try './s21_cat --help' for more information.");
                             errcode = ERROR;
                         }                                   break;
                     case 'n': Opt.n = SET;                  break;
@@ -50,12 +46,12 @@ int main(int argc, char **argv) {
                     case 't': Opt.v = Opt.t = SET;          break;
                     case 'A': Opt.v = Opt.t = Opt.e = SET;  break;
                     default:
-                        printf("s21_cat: invalid option -- %c\n", argv[i][j]);
+                        printf("s21_cat: invalid option -- '%c'\n", argv[i][j]);
                         puts("Try 's21_cat --help' for more information.");
                         errcode = ERROR;
                 }
             }
-            optcode = OK;
+//            optcode = OK;
         }
     }
 
@@ -81,18 +77,25 @@ int s21_print_file(char *file_name, Options *Opt) {
         int next_char = fgetc(file);
         unsigned int num_str = 0;
 
-        if (Opt->n == 1 && Opt->b == 1)
-            Opt->n = 0;
-
-        if (Opt->n == 1 || (Opt->b == 1 && c != '\n'))
-            printf("%6u\t", ++num_str);
-
-        if (Opt->s == 1 && c == '\n' && next_char == '\n') {
-            while (next_char == '\n') next_char = fgetc(file);
-        }
+        // Проверили одновременную подачу двух флагов нумерации
+        if (Opt->n == 1 && Opt->b == 1) {
+			Opt->n = 0;
+		}
+        // Если первый символ - перенос строки и флаг нумерации, то печатаем номер
+        if (Opt->n == 1 \
+		|| (Opt->b == 1 && c != '\n')) {
+			printf("%6u\t", ++num_str);
+		}
+        // Если сразу несколько пустых строк подряд и флаг на сжатие, то
+        // переопределеям указатель на следующий символ, пока не встретим что-то
+        // отличное от переноса строки
         if (c == '\n') {
             if (Opt->e == 1) putchar('$');
             putchar('\n');
+
+            if (Opt->s == 1 && next_char == '\n')
+                while (next_char == '\n') next_char = fgetc(file);
+
             c = next_char;
             if (Opt->n == 1 || (Opt->b == 1 && next_char != '\n'))
                 printf("%6u\t", ++num_str);
@@ -162,3 +165,4 @@ int s21_print_file(char *file_name, Options *Opt) {
     }
     return (errcode);
 }
+

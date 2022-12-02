@@ -6,12 +6,13 @@
 #
 
 NAME		:= s21_cat
-HEADER		:= s21_cat.h
+HEADER		:= $(NAME).h
 UTILITY		:= $(NAME)
+TEST_FILE	:= e_cat.sh
 
 CC			:= gcc
 CFLAGS		:= -std=c11 -pedantic -Wall -Werror -Wextra
-SRCS		:= s21_cat.c
+SRCS		:= $(NAME).c
 OBJS		:= $(SRCS:.c=.o)
 
 TEST_FILE	:= ../../datasets/test_file1.txt
@@ -21,13 +22,13 @@ TEST_FILE	:= ../../datasets/test_file1.txt
 all: s21_cat
 
 s21_cat: $(OBJS)
-		@$(CC) $(CFLAGS) $(NAME).c -o $(UTILITY)
+		$(CC) $(CFLAGS) $(NAME).c -o $(UTILITY)
 
 %.o: %.c $(HEADER)
 		$(CC) $(CFLAGS) -c $< -o $@
 
 test: $(NAME)
-		./test_cat.sh
+		./TEST_FILE
 		@#./$(NAME) ../../datasets/bytes.txt
 #		@./$(NAME) ../../datasets/abcdef.txt
 #		@./$(NAME) -n ../../datasets/abcdef.txt
