@@ -41,21 +41,21 @@ int parser(int argc, char **argv, int errcode, Options *Opt) {
 						} else if (strcmp(opt_phrase, "show-ends")        == 0) { Opt->e = opt_long = SET;
 						} else if (strcmp(opt_phrase, "show-tabs")        == 0) { Opt->t = opt_long = SET;
 						} else if (strcmp(opt_phrase, "show-all")         == 0) { Opt->v = Opt->t = Opt->e =
-																				  opt_long = SET;
+																				           opt_long = SET;
 						} else {
 							printf("s21_cat: unrecognized option --%s\n", opt_phrase);
 							puts("Try './s21_cat --help' for more information.");
 							errcode = ERROR;
-						}                                   break;
-					case 'n': Opt->n = SET;                  break;
-					case 'b': Opt->b = SET;                  break;
-					case 's': Opt->s = SET;                  break;
-					case 'v': Opt->v = SET;                  break;
-					case 'E': Opt->e = SET;                  break;
-					case 'T': Opt->t = SET;                  break;
+						}                                     break;
+					case 'b': Opt->b = SET;                   break;
+					case 'n': Opt->n = SET;                   break;
+					case 's': Opt->s = SET;                   break;
+					case 'v': Opt->v = SET;                   break;
+					case 'T': Opt->t = SET;                   break;
+					case 'E': Opt->e = SET;                   break;
 					case 'e': Opt->v = Opt->e = SET;          break;
 					case 't': Opt->v = Opt->t = SET;          break;
-					case 'A': Opt->v = Opt->t = Opt->e = SET;  break;
+					case 'A': Opt->v = Opt->t = Opt->e = SET; break;
 					default:
 						printf("s21_cat: invalid option -- '%c'\n", argv[i][j]);
 						puts("Try 's21_cat --help' for more information.");
@@ -88,7 +88,8 @@ void print_file(char *file_name, Options *Opt) {
 
 		position = IS_MID;
 		do {
-//			t_handler();
+			v_handler(&c, Opt);
+			t_handler(&c, Opt);
 			s_handler(file, &c, Opt, &num_str, &position);
 //			e_handler();
 			
@@ -163,5 +164,34 @@ void s_handler(FILE *file, int *c, Options *Opt, unsigned int *num_str, char *po
 			}
 		}
 	}
+}
+
+void v_handler(int *c, Options *Opt) {
+	if (Opt->v) {
+		if ((0 <= *c && *c <= 8) || (11 <= *c && *c <= 31)) {
+			putchar('^');
+			*c += 64;
+		}
+		if (*c == 127) {
+			putchar('^');
+			*c -= 64;
+		}
+	}
+}
+
+void t_handler(int *c, Options *Opt) {
+	if (Opt->t && *c == '\t') {
+		putchar('^');
+		*c += 64;
+	}
+	v_handler(c, Opt);
+}
+
+void e_handler(int *c, Options *Opt) {
+	if (Opt->e) {
+		if (*c == '\n')
+			printf("$");
+	}
+	v_handler(c, Opt);
 }
 

@@ -46,6 +46,10 @@ void b_handler(FILE *file, int *c, Options *Opt, unsigned int *num_str, char *po
 void n_handler(FILE *file, int *c, Options *Opt, unsigned int *num_str);
 void s_handler(FILE *file, int *c, Options *Opt, unsigned int *num_str, char *position);
 void s_opt_handler(FILE *file, int *fut_c, int *c, Options *Opt, unsigned int *num_str, char *position);
+void v_handler(int *c, Options *Opt);
+void t_handler(int *c, Options *Opt);
+void e_handler(int *c, Options *Opt);
+
 
 #endif  // SRC_CAT_S21_CAT_H_
 

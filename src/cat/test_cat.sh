@@ -8,8 +8,8 @@ DIR_TRACES="_traces/"
 #flags=""
 #flags="-s"
 #flags="-b"
- flags="-b -s"
-#flags="-e"
+#flags="-t"
+ flags="-e"
 #flags="--show-nonprinting"
 
 touch 42.txt
