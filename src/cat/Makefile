@@ -26,7 +26,7 @@ s21_cat: $(OBJ)
 		$(CC) $(CFLAGS) -c $< -o $@
 
 test: $(NAME)
-		./$(TEST_FILE)
+		bash ./$(TEST_FILE)
 
 lint: $(NAME)
 		@echo ---------------------CPPCHECK---------------------
