@@ -6,20 +6,20 @@
 #
 
 NAME		:= s21_cat
-HEADER		:= $(NAME).h
 UTILITY		:= $(NAME)
+HEADER		:= $(NAME).h
 TEST_FILE	:= e_cat.sh
 
 CC			:= gcc
 CFLAGS		:= -std=c11 -pedantic -Wall -Werror -Wextra
-SRCS		:= $(NAME).c
-OBJS		:= $(SRCS:.c=.o)
+SRC			:= $(NAME).c
+OBJ			:= $(SRC:.c=.o)
 
 .PHONY: all s21_cat test check clean fclean re
 
 all: s21_cat
 
-s21_cat: $(OBJS)
+s21_cat: $(OBJ)
 		$(CC) $(CFLAGS) $(NAME).c -o $(UTILITY)
 
 %.o: %.c $(HEADER)
@@ -27,23 +27,14 @@ s21_cat: $(OBJS)
 
 test: $(NAME)
 		./$(TEST_FILE)
-		@#./$(NAME) ../../datasets/bytes.txt
-#		@./$(NAME) ../../datasets/abcdef.txt
-#		@./$(NAME) -n ../../datasets/abcdef.txt
-#		@./$(NAME) ../../datasets/first.txt ../../datasets/second.txt
-#		@./$(NAME) ../../datasets/no_file.txt
 
-check: $(NAME)
-		@clear
+lint: $(NAME)
 		@echo ---------------------CPPCHECK---------------------
-		cppcheck --enable=all --suppress=missingIncludeSystem . $(HEADER) $(SRCS)
-		@echo ---------------------CPPLINT----------------------
-		cp ../../materials/linters/CPPLINT.cfg CPPLINT.cfg
-		python3 ../../materials/linters/cpplint.py --extension=c $(SRCS) $(HEADER)
-		rm CPPLINT.cfg
-
+		cppcheck --enable=all --suppress=missingIncludeSystem . $(HEADER) $(SRC)
+		@echo -------------------CLANG-FORMAT-------------------
+		clang-format -i $(SRC) $(HEADER)
 clean:
-		rm -rf $(OBJS) *.txt
+		rm -rf $(OBJ) *.txt
 
 fclean: clean
 		rm -rf $(NAME)
@@ -51,5 +42,3 @@ fclean: clean
 re:
 		$(MAKE) fclean
 		$(MAKE) all
-
-

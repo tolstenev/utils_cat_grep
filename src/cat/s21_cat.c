@@ -32,7 +32,7 @@ int parser(int argc, char **argv, int errcode, Options *Opt) {
         switch (argv[i][j]) {
           case '-':
             if (strcmp(opt_phrase, "help") == 0) {
-              print_file("dir/USAGE.txt", Opt);
+              print_file("USAGE.txt", Opt);
               errcode = STOP;
             } else if (strcmp(opt_phrase, "number") == 0) {
               Opt->n = opt_long = SET;
@@ -89,16 +89,13 @@ int parser(int argc, char **argv, int errcode, Options *Opt) {
       }
     }
   }
-
   return errcode;
 }
 
-int file_exist(FILE *file) { return !(feof(file) || ferror(file)); }
-
 void print_file(char *file_name, Options *Opt) {
-  FILE *file = fopen(file_name, "r");
+  FILE *file;
 
-  if (file == NULL) {
+  if (NULL == (file = fopen(file_name, "r"))) {
     printf("s21_cat: No such file or directory '%s'\n", file_name);
   } else {
     int c = fgetc(file);
@@ -122,31 +119,34 @@ void print_file(char *file_name, Options *Opt) {
       n_handler(file, &c, Opt, &num_str);
       c = fgetc(file);
     } while (file_exist(file));
+
+    fclose(file);
   }
-  fclose(file);
 }
 
-void b_handler(FILE *file, int *c, Options *Opt, unsigned int *num_str,
-               char *position) {
+int file_exist(FILE *file) { return !(feof(file) || ferror(file)); }
+
+void b_handler(FILE *file, const int *c, Options *Opt, unsigned int *num_str,
+               const char *position) {
   if (Opt->b) {
     Opt->n = 0;
     int fut_c = fgetc(file);
     if (file_exist(file)) {
       if ((*c == '\n' && fut_c != '\n' && *position == IS_MID) ||
           (*c != '\n' && *position == IS_BEGIN)) {
-        printf("%6d\t", ++(*num_str));
+        printf("%6u\t", ++(*num_str));
       }
       fseek(file, -1, SEEK_CUR);
     }
   }
 }
 
-void n_handler(FILE *file, int *c, Options *Opt, unsigned int *num_str) {
+void n_handler(FILE *file, const int *c, Options *Opt, unsigned int *num_str) {
   if (Opt->n) {
     fgetc(file);
     if (file_exist(file)) {
       if (*c == '\n' || *num_str == 0) {
-        printf("%6d\t", ++(*num_str));
+        printf("%6u\t", ++(*num_str));
       }
       fseek(file, -1, SEEK_CUR);
     }
@@ -154,20 +154,14 @@ void n_handler(FILE *file, int *c, Options *Opt, unsigned int *num_str) {
 }
 
 void s_opt_handler(FILE *file, int *fut_c, int *c, Options *Opt,
-                   unsigned int *num_str, char *position) {
+                   unsigned int *num_str, const char *position) {
   if (*fut_c == '\n') {
-    if (Opt->e) {
-      printf("$");
-    }
-    while (*fut_c == '\n') {
-      *fut_c = fgetc(file);
-    }
+    if (Opt->e) printf("$");
+    while (*fut_c == '\n') *fut_c = fgetc(file);
     putchar('\n');
-    if (*position == IS_BEGIN) {
-      *c = *fut_c;
-    }
+    if (*position == IS_BEGIN) *c = *fut_c;
     if (Opt->n || (Opt->b && *position == IS_BEGIN)) {
-      printf("%6d\t", ++(*num_str));
+      printf("%6u\t", ++(*num_str));
     }
   }
 }
@@ -214,8 +208,6 @@ void t_handler(int *c, Options *Opt) {
 }
 
 void e_handler(int *c, Options *Opt) {
-  if (Opt->e) {
-    if (*c == '\n') printf("$");
-  }
+  if (Opt->e && (*c == '\n')) printf("$");
   v_handler(c, Opt);
 }

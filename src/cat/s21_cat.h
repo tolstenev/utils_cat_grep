@@ -1,6 +1,7 @@
 /**
  * Copyright (с) 2022 Student of School 21:
  * Yonn Argelia
+ *
  * yonnarge@student.21-school.ru
  *
  * The programm "s21_cat" implement the bash util 'cat'
@@ -36,16 +37,16 @@ enum option_codes {
 
 enum position_codes { IS_BEGIN = 0, IS_MID = 1 };
 
-void print_file(char *file_name, Options *Opt);
 int file_exist(FILE *file);
 int parser(int argc, char **argv, int errcode, Options *Opt);
-void b_handler(FILE *file, int *c, Options *Opt, unsigned int *num_str,
-               char *position);
-void n_handler(FILE *file, int *c, Options *Opt, unsigned int *num_str);
+void print_file(char *file_name, Options *Opt);
+void b_handler(FILE *file, const int *c, Options *Opt, unsigned int *num_str,
+               const char *position);
+void n_handler(FILE *file, const int *c, Options *Opt, unsigned int *num_str);
 void s_handler(FILE *file, int *c, Options *Opt, unsigned int *num_str,
                char *position);
 void s_opt_handler(FILE *file, int *fut_c, int *c, Options *Opt,
-                   unsigned int *num_str, char *position);
+                   unsigned int *num_str, const char *position);
 void v_handler(int *c, Options *Opt);
 void t_handler(int *c, Options *Opt);
 void e_handler(int *c, Options *Opt);
