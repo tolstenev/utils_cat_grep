@@ -8,7 +8,7 @@
 NAME		:= s21_cat
 UTILITY		:= $(NAME)
 HEADER		:= $(NAME).h
-TEST_FILE	:= e_cat.sh
+TEST_FILE	:= test_cat.sh
 
 CC			:= gcc
 CFLAGS		:= -std=c11 -pedantic -Wall -Werror -Wextra
@@ -34,7 +34,7 @@ lint: $(NAME)
 		@echo -------------------CLANG-FORMAT-------------------
 		clang-format -i $(SRC) $(HEADER)
 clean:
-		rm -rf $(OBJ) *.txt
+		rm -rf $(OBJ) log.txt
 
 fclean: clean
 		rm -rf $(NAME)
