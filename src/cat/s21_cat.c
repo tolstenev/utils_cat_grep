@@ -82,24 +82,50 @@ void print_file(char *file_name, Options *Opt) {
         unsigned int num_str = 0;
 		char position = IS_BEGIN;
 
-//		b_handler();
-//		n_handler();
-		s_handler(file, &c, Opt, &num_str, position);
+		b_handler(file, &c, Opt, &num_str, &position);
+		n_handler(file, &c, Opt, &num_str);
+		s_handler(file, &c, Opt, &num_str, &position);
 
 		position = IS_MID;
 		do {
 //			t_handler();
-			s_handler(file, &c, Opt, &num_str, position);
+			s_handler(file, &c, Opt, &num_str, &position);
 //			e_handler();
 			
 			putchar(c);
-			
-//			b_handler();
-//			n_handler();
+
+			b_handler(file, &c, Opt, &num_str, &position);
+			n_handler(file, &c, Opt, &num_str);
 			c = fgetc(file);
 		} while (file_exist(file));
     }
 	fclose(file);
+}
+
+void b_handler(FILE *file, int *c, Options *Opt, unsigned int *num_str, char *position) {
+	if (Opt->b) {
+		Opt->n = 0;
+		int fut_c = fgetc(file);
+		if (file_exist(file)) {
+			if ((*c == '\n' && fut_c != '\n' && *position == IS_MID) \
+							  || (*c != '\n' && *position == IS_BEGIN)) {
+				printf("%6d\t", ++(*num_str));
+			}
+			fseek(file, -1, SEEK_CUR);
+		}
+	}
+}
+
+void n_handler(FILE *file, int *c, Options *Opt, unsigned int *num_str) {
+	if (Opt->n) {
+		fgetc(file);
+		if (file_exist(file)) {
+			if (*c == '\n' || *num_str == 0) {
+				printf("%6d\t", ++(*num_str));
+			}
+			fseek(file, -1, SEEK_CUR);
+		}
+	}
 }
 
 void s_opt_handler(FILE *file, int *fut_c, int *c, Options *Opt, unsigned int *num_str, char *position) {
@@ -115,22 +141,22 @@ void s_opt_handler(FILE *file, int *fut_c, int *c, Options *Opt, unsigned int *n
 			*c = *fut_c;
 		}
 		if (Opt->n || (Opt->b && *position == IS_BEGIN)) {
-			printf("%6d\t", *(++num_str));
+			printf("%6d\t", ++(*num_str));
 		}
 	}
 }
 
-void s_handler(FILE *file, int *c, Options *Opt, unsigned int *num_str, char position) {
+void s_handler(FILE *file, int *c, Options *Opt, unsigned int *num_str, char *position) {
 	if (Opt->s) {
 		int fut_c = fgetc(file);
-		if (position == IS_BEGIN) {
+		if (*position == IS_BEGIN) {
 			if (*c != '\n') {
 				fseek(file, -1, SEEK_CUR);
 			}
-			s_opt_handler(file, &fut_c, c, Opt, num_str, &position);
-		} else if (position == IS_MID) {
+			s_opt_handler(file, &fut_c, c, Opt, num_str, position);
+		} else if (*position == IS_MID) {
 			if (*c == '\n') {
-				s_opt_handler(file, &fut_c, c, Opt, num_str, &position);
+				s_opt_handler(file, &fut_c, c, Opt, num_str, position);
 			}
 			if (file_exist(file)) {
 				fseek(file, -1, SEEK_CUR);

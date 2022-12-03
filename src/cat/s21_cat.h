@@ -42,7 +42,9 @@ enum position_codes {
 void print_file(char *file_name, Options *Opt);
 int file_exist(FILE *file);
 int parser(int argc, char **argv, int errcode, Options *Opt);
-void s_handler(FILE *file, int *c, Options *Opt, unsigned int *num_str, char position);
+void b_handler(FILE *file, int *c, Options *Opt, unsigned int *num_str, char *position);
+void n_handler(FILE *file, int *c, Options *Opt, unsigned int *num_str);
+void s_handler(FILE *file, int *c, Options *Opt, unsigned int *num_str, char *position);
 void s_opt_handler(FILE *file, int *fut_c, int *c, Options *Opt, unsigned int *num_str, char *position);
 
 #endif  // SRC_CAT_S21_CAT_H_
