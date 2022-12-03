@@ -9,9 +9,9 @@
 #ifndef SRC_CAT_S21_CAT_H_
 #define SRC_CAT_S21_CAT_H_
 
+#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
-#include <stdbool.h>
 
 typedef struct {
   char b;
@@ -28,30 +28,26 @@ enum error_codes {
   STOP = 2,
 };
 
-enum option_codes{
+enum option_codes {
   CLEAR = 0,
   SET = 1,
   HELP = 2,
 };
 
-enum position_codes {
-  IS_BEGIN = 0,
-  IS_MID = 1
-};
+enum position_codes { IS_BEGIN = 0, IS_MID = 1 };
 
 void print_file(char *file_name, Options *Opt);
 int file_exist(FILE *file);
 int parser(int argc, char **argv, int errcode, Options *Opt);
-void b_handler(FILE *file, int *c, Options *Opt, unsigned int *num_str, char *position);
+void b_handler(FILE *file, int *c, Options *Opt, unsigned int *num_str,
+               char *position);
 void n_handler(FILE *file, int *c, Options *Opt, unsigned int *num_str);
-void s_handler(FILE *file, int *c, Options *Opt, unsigned int *num_str, char *position);
-void s_opt_handler(FILE *file, int *fut_c, int *c, Options *Opt, unsigned int *num_str, char *position);
+void s_handler(FILE *file, int *c, Options *Opt, unsigned int *num_str,
+               char *position);
+void s_opt_handler(FILE *file, int *fut_c, int *c, Options *Opt,
+                   unsigned int *num_str, char *position);
 void v_handler(int *c, Options *Opt);
 void t_handler(int *c, Options *Opt);
 void e_handler(int *c, Options *Opt);
 
-
 #endif  // SRC_CAT_S21_CAT_H_
-
-
-
