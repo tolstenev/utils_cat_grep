@@ -14,28 +14,36 @@
 #include <stdbool.h>
 
 typedef struct {
-  int b;
-  int e;
-  int n;
-  int s;
-  int t;
-  int v;
+  char b;
+  char e;
+  char n;
+  char s;
+  char t;
+  char v;
 } Options;
 
-enum {
+enum error_codes {
   OK = 0,
   ERROR = 1,
   STOP = 2,
 };
 
-enum {
+enum option_codes{
   CLEAR = 0,
   SET = 1,
   HELP = 2,
 };
 
-int s21_print_file(char *file_name, Options *Opt);
-int s21_file_is_exist(FILE *file);
+enum position_codes {
+  IS_BEGIN = 0,
+  IS_MID = 1
+};
+
+void print_file(char *file_name, Options *Opt);
+int file_exist(FILE *file);
+int parser(int argc, char **argv, int errcode, Options *Opt);
+void s_handler(FILE *file, int *c, Options *Opt, unsigned int *num_str, char position);
+void s_opt_handler(FILE *file, int *fut_c, int *c, Options *Opt, unsigned int *num_str, char *position);
 
 #endif  // SRC_CAT_S21_CAT_H_
 
