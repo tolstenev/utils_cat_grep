@@ -10,7 +10,6 @@
 #ifndef SRC_CAT_S21_CAT_H_
 #define SRC_CAT_S21_CAT_H_
 
-#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 

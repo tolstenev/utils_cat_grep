@@ -8,14 +8,14 @@
 NAME		:= s21_cat
 UTILITY		:= $(NAME)
 HEADER		:= $(NAME).h
-TEST_FILE	:= test_cat.sh
+TEST_FILE	:= test_$(NAME).sh
 
 CC			:= gcc
 CFLAGS		:= -std=c11 -pedantic -Wall -Werror -Wextra
 SRC			:= $(NAME).c
 OBJ			:= $(SRC:.c=.o)
 
-.PHONY: all s21_cat test check clean fclean re
+.PHONY: all s21_cat test lint clean fclean re
 
 all: s21_cat
 
