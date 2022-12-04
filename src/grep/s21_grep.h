@@ -12,6 +12,10 @@
 
 #include <stdio.h>
 #include <getopt.h>
+#include <string.h>
+#include <stdlib.h>
+
+#define BUFF_SIZE 1024
 
 typedef struct {
   char v;
