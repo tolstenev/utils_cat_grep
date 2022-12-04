@@ -93,6 +93,7 @@ int parser(int argc, char **argv, int errcode, Options *Opt) {
 }
 
 void print_file(char *file_name, Options *Opt) {
+#TODO: проверить, посоветоваться мб стоит занулить здесь указатель на файл?
   FILE *file;
 
   if (NULL == (file = fopen(file_name, "r"))) {

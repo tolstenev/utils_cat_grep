@@ -34,7 +34,7 @@ lint: $(NAME)
 		@echo -------------------CLANG-FORMAT-------------------
 		clang-format -i $(SRC) $(HEADER)
 clean:
-		rm -rf $(OBJ) log.txt
+		rm -rf $(OBJ) _traces/
 
 fclean: clean
 		rm -rf $(NAME)

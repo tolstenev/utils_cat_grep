@@ -25,19 +25,39 @@ int main(int argc, char **argv) {
 	if (errcode == OK) {
 		while ((symbol = getopt_long(argc, argv, optstring, 0, NULL)) != -1) {
 			errcode = init_struct(&Opt, symbol, pattern);
-			if (!errcode) {
-				printf("optind = %d\n", optind);
-				printf("argv[optind] = %s\n", argv[optind]);
-				printf("optarg = %s\n", optarg);
-				printf("pattern = %s\n", pattern);
+
+// Отладочный вывод переменных
+
+//			if (!errcode) {
+//				printf("optind = %d\n", optind);
+//				printf("file_name = %s\n", argv[optind]);
+//				printf("optarg = %s\n", optarg);
+//				printf("pattern = %s\n", pattern);
+//			}
+
+			FILE *file;
+			char *file_name = argv[optind];
+
+			if (NULL == (file = fopen(file_name, "r"))) {
+				printf("s21_grep: %s: No such file or directory\n", file_name);
+				errcode = STOP;
+			} else {
+				regex_t reg;
+
+				regcomp(&reg, pattern, REG_EXTENDED);
+
+				char buffer[BUFF_SIZE] = {0};
+				while (fgets(buffer, BUFF_SIZE, file) != NULL) {
+					if (regexec(&reg, buffer, 0, NULL, 0) == 0) {
+						fputs(buffer, stdout);
+					}
+				}
+
+				regfree(&reg);
 			}
 		}
 	}
 
-//	if (errcode == OK)
-//		print_options(&Opt);
-
-//	if (NULL == (FILE *file = fopen()))
 	free(pattern);
 	return (errcode);
 }

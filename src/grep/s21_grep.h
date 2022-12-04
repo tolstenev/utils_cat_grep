@@ -14,6 +14,7 @@
 #include <getopt.h>
 #include <string.h>
 #include <stdlib.h>
+#include <regex.h>
 
 #define BUFF_SIZE 1024
 

@@ -56,3 +56,4 @@ dkms.conf
 .DS_Store
 _traces/
 s21_cat
+s21_grep
