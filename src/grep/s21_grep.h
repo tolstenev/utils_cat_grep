@@ -11,6 +11,21 @@
 #define SRC_GREP_S21_GREP_H_
 
 #include <stdio.h>
+#include <getopt.h>
+
+typedef struct {
+  char v;
+  char i;
+  char o;
+  char l;
+  char n;
+  char c;
+  char e;
+  char f;
+  char s;
+  char h;
+} Options;
+
 
 enum error_codes {
   OK = 0,

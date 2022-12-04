@@ -7,15 +7,82 @@
 
 #include "s21_grep.h"
 
+
+void print_options(Options *Opt);
+int init_struct (Options *Opt, int symbol);
+
+
 int main(int argc, char **argv) {
 	int errcode = OK;
+	Options Opt = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+	char *example_flags = "violnce:f:sh?";
+	int symbol = 0;
+
+
+	while ((symbol = getopt_long(argc, argv, example_flags, 0, NULL)) != -1)
+		errcode = init_struct(&Opt, symbol);
+
+	if (!errcode)
+		print_options(&Opt);
 
 	return (errcode);
 }
 
+void print_options(Options *Opt) {
+	printf("Opt.v = %u\n", Opt->v);
+	printf("Opt.i = %u\n", Opt->i);
+	printf("Opt.o = %u\n", Opt->o);
+	printf("Opt.l = %u\n", Opt->l);
+	printf("Opt.n = %u\n", Opt->n);
+	printf("Opt.c = %u\n", Opt->c);
+	printf("Opt.e = %u\n", Opt->e);
+	printf("Opt.f = %u\n", Opt->f);
+	printf("Opt.s = %u\n", Opt->s);
+	printf("Opt.h = %u\n", Opt->h);
+}
 
+int init_struct(Options *Opt, int symbol){
+	int errcode = OK;
 
+	switch (symbol) {
+		case 'v':
+			Opt->v = SET;
+		break;
+		case 'i':
+			Opt->i = SET;
+			break;
+		case 'o':
+			Opt->o = SET;
+			break;
+		case 'l':
+			Opt->l = SET;
+			break;
+		case 'n':
+			Opt->n = SET;
+			break;
+		case 'c':
+			Opt->c = SET;
+			break;
+		case 'e':
+			Opt->e = SET;
+			break;
+		case 'f':
+			Opt->f = SET;
+			break;
+		case 's':
+			Opt->s = SET;
+			break;
+		case 'h':
+			Opt->h = SET;
+			break;
+		case '?':
+		default:
+			puts("s21_grep: unrecognized option");
+			errcode = ERROR;
+	}
+	return (errcode);
 
+}
 
 
 
