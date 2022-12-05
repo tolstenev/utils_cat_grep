@@ -10,11 +10,11 @@
 #ifndef SRC_GREP_S21_GREP_H_
 #define SRC_GREP_S21_GREP_H_
 
-#include <stdio.h>
 #include <getopt.h>
-#include <string.h>
-#include <stdlib.h>
 #include <regex.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #define BUFF_SIZE 1024
 
@@ -31,7 +31,6 @@ typedef struct {
   char h;
 } Options;
 
-
 enum error_codes {
   OK = 0,
   ERROR = 1,
@@ -43,6 +42,5 @@ enum option_codes {
   SET = 1,
   HELP = 2,
 };
-
 
 #endif  // SRC_GREP_S21_GREP_H_

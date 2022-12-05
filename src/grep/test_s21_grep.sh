@@ -4,7 +4,7 @@ PATH_TO="./"
 FILE="lyrics.txt"
 DIR_TRACES="_traces/"
  FLAGS="-e"
- PATTERN="see"
+ PATTERN="me"
 
 TEST_CASE="grep $FLAGS $PATTERN $PATH_TO$FILE"
 
@@ -18,7 +18,7 @@ echo "------------------------"
 echo "orig: $TEST_CASE"
 $TEST_CASE
 echo "--------------"
-echo "s21_: s21_$TEST_CASE"
+echo "s21_: ./s21_$TEST_CASE"
 ./s21_$TEST_CASE
 echo "--------------"
 

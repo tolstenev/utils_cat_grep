@@ -29,10 +29,13 @@ test: $(NAME)
 		bash ./$(TEST_FILE)
 
 lint: $(NAME)
-		@echo ---------------------CPPCHECK---------------------
-		cppcheck --enable=all --suppress=missingIncludeSystem . $(HEADER) $(SRC)
 		@echo -------------------CLANG-FORMAT-------------------
 		clang-format -i $(SRC) $(HEADER)
+
+check: $(NAME)
+		@echo ---------------------CPPCHECK---------------------
+		cppcheck --enable=all --suppress=missingIncludeSystem . $(HEADER) $(SRC)
+
 clean:
 		rm -rf $(OBJ) _traces/
 
