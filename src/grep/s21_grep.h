@@ -34,7 +34,7 @@ typedef struct {
 enum error_codes {
   STOP = -1,
   OK = 0,
-	NO_MATCHES_FOUND = 1,
+  NO_MATCHES_FOUND = 1,
   ERROR = 2,
 };
 

@@ -1,8 +1,8 @@
 #!/bin/bash
 
-FILE="lyrics.txt pattern.file battern.file"
- FLAGS="-e"
- PATTERN="rock"
+FILE="lyrics.txt pattern.file"
+ FLAGS=""
+ PATTERN="me"
 
 TEST_CASE="grep $FLAGS $PATTERN $FILE"
 
