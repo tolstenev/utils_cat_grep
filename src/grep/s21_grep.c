@@ -13,10 +13,13 @@
 int init_struct(Options *Opt, int symbol, char *pattern);
 void init_e_pattern(char *pattern);
 
-int file_handler(const char **argv, char *pattern, int num_files);
+int executor(const char **argv, char *pattern, Options *Opt);
+int file_handler(const char **argv, char *pattern, int num_files, Options *Opt);
 int file_counter(const char **argv);
+void flag_handler(const char **argv, int index_file_arg, int num_files, int num_str, char *buff_str, Options *Opt);
 
-// void flag_handler();
+void n_handler(int num_str, Options *Opt);
+
 
 int main(int argc, char **argv) {
   int errcode = OK;
@@ -34,13 +37,11 @@ int main(int argc, char **argv) {
 
       if ((Opt.e || Opt.f) && (argc < 4)) errcode = ERROR;
 
-      if (errcode == OK) {
-				int num_files = 0;
 
-				num_files = file_counter((const char **)argv);
-        file_handler((const char **)argv, pattern, num_files);
-      }
     }
+		if (errcode == OK) {
+			executor((const char **)argv, pattern,  &Opt);
+		}
   }
 
   if (NULL != pattern) free(pattern);
@@ -48,21 +49,38 @@ int main(int argc, char **argv) {
   return (errcode);
 }
 
-// void flag_handler() {}
+int executor(const char **argv, char *pattern, Options *Opt) {
+	int errcode = OK;
+
+	int num_files = 0;
+
+	num_files = file_counter(argv);
+	errcode = file_handler(argv, pattern, num_files, Opt);
+
+	return (errcode);
+}
+
+void flag_handler(const char **argv, int index_file_arg, int num_files, int num_str, char *buff_str, Options *Opt) {
+	if (num_files > 1)
+		printf("%s:", argv[index_file_arg]);
+	n_handler(num_str, Opt);
+	fputs(buff_str, stdout);
+}
 
 int file_counter(const char **argv) {
 	int num_files = 0;
-
 	for (int i = optind; NULL != argv[i]; ++i) {
+
 		if (argv[i][0] != '-') {
 			num_files += 1;
 		}
+
 	}
 
 	return (num_files);
 }
 
-int file_handler(const char **argv, char *pattern, int num_files) {
+int file_handler(const char **argv, char *pattern, int num_files, Options *Opt) {
   int errcode = OK;
 
 	for (int index_loop = 0; index_loop < num_files; ++index_loop) {
@@ -79,15 +97,21 @@ int file_handler(const char **argv, char *pattern, int num_files) {
 			regcomp(&reg, pattern, REG_EXTENDED);
 
 
-			char buff_string[BUFF_SIZE] = {0};
+			char *buff_str = calloc(BUFF_SIZE, sizeof(char));
+			int num_str = 1;
 
-			while (NULL != fgets(buff_string, BUFF_SIZE, file)) {
-				if (0 == regexec(&reg, buff_string, 0, NULL, 0)) {
-					if (num_files > 1)
-						printf("%s:", argv[index_file_arg]);
-					fputs(buff_string, stdout);
+			if (NULL == buff_str) errcode = STOP;
+
+			if (errcode == OK) {
+				while (NULL != fgets(buff_str, BUFF_SIZE, file)) {
+					if (0 == regexec(&reg, buff_str, 0, NULL, 0)) {
+						flag_handler(argv, index_file_arg, num_files, num_str, buff_str, Opt);
+					}
+					++num_str;
 				}
 			}
+
+			if (NULL != buff_str) free(buff_str);
 
 			regfree(&reg);
 		}
@@ -95,6 +119,8 @@ int file_handler(const char **argv, char *pattern, int num_files) {
 
   return (errcode);
 }
+
+void n_handler(int num_str, Options *Opt) { if (Opt->n) printf("%d:", num_str); }
 
 void init_e_pattern(char *pattern) { strcpy(pattern, optarg); }
 

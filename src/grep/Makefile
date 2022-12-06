@@ -37,7 +37,7 @@ check: $(NAME)
 		cppcheck --enable=all --suppress=missingIncludeSystem . $(HEADER) $(SRC)
 
 clean:
-		rm -rf $(OBJ) _traces/
+		rm -rf $(OBJ) *.log
 
 fclean: clean
 		rm -rf $(NAME)
