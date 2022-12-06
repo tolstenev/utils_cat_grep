@@ -32,9 +32,10 @@ typedef struct {
 } Options;
 
 enum error_codes {
+  STOP = -1,
   OK = 0,
-  ERROR = 1,
-  STOP = 2,
+	NO_MATCHES_FOUND = 1,
+  ERROR = 2,
 };
 
 enum option_codes {

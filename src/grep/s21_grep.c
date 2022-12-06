@@ -13,7 +13,9 @@
 int init_struct(Options *Opt, int symbol, char *pattern);
 void init_e_pattern(char *pattern);
 
-int file_handler(const char **argv, char *pattern);
+int file_handler(const char **argv, char *pattern, int num_files);
+int file_counter(const char **argv);
+
 // void flag_handler();
 
 int main(int argc, char **argv) {
@@ -33,7 +35,10 @@ int main(int argc, char **argv) {
       if ((Opt.e || Opt.f) && (argc < 4)) errcode = ERROR;
 
       if (errcode == OK) {
-        file_handler((const char **)argv, pattern);
+				int num_files = 0;
+
+				num_files = file_counter((const char **)argv);
+        file_handler((const char **)argv, pattern, num_files);
       }
     }
   }
@@ -43,36 +48,55 @@ int main(int argc, char **argv) {
   return (errcode);
 }
 
-void init_e_pattern(char *pattern) { strcpy(pattern, optarg); }
-
 // void flag_handler() {}
 
-int file_handler(const char **argv, char *pattern) {
+int file_counter(const char **argv) {
+	int num_files = 0;
+
+	for (int i = optind; NULL != argv[i]; ++i) {
+		if (argv[i][0] != '-') {
+			num_files += 1;
+		}
+	}
+
+	return (num_files);
+}
+
+int file_handler(const char **argv, char *pattern, int num_files) {
   int errcode = OK;
 
-  FILE *file;
-  const char *file_name = argv[optind];
+	for (int index_loop = 0; index_loop < num_files; ++index_loop) {
+		FILE *file;
+		int index_file_arg = optind + index_loop;
+		const char *file_name = argv[index_file_arg];
 
-  if (NULL == (file = fopen(file_name, "r"))) {
-    printf("s21_grep: %s: No such file or directory\n", file_name);
-    errcode = STOP;
-  } else {
-    regex_t reg;
+		if (NULL == (file = fopen(file_name, "r"))) {
+			printf("s21_grep: %s: No such file or directory\n", file_name);
+			errcode = STOP;
+		} else {
+			regex_t reg;
 
-    regcomp(&reg, pattern, REG_EXTENDED);
+			regcomp(&reg, pattern, REG_EXTENDED);
 
-    char buffer[BUFF_SIZE] = {0};
-    while (fgets(buffer, BUFF_SIZE, file) != NULL) {
-      if (regexec(&reg, buffer, 0, NULL, 0) == 0) {
-        fputs(buffer, stdout);
-      }
-    }
 
-    regfree(&reg);
-  }
+			char buff_string[BUFF_SIZE] = {0};
+
+			while (NULL != fgets(buff_string, BUFF_SIZE, file)) {
+				if (0 == regexec(&reg, buff_string, 0, NULL, 0)) {
+					if (num_files > 1)
+						printf("%s:", argv[index_file_arg]);
+					fputs(buff_string, stdout);
+				}
+			}
+
+			regfree(&reg);
+		}
+	}
 
   return (errcode);
 }
+
+void init_e_pattern(char *pattern) { strcpy(pattern, optarg); }
 
 int init_struct(Options *Opt, int symbol, char *pattern) {
   int errcode = OK;

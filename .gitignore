@@ -57,3 +57,4 @@ dkms.conf
 _traces/
 s21_cat
 s21_grep
+src/grep/*.log
