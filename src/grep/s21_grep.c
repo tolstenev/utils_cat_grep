@@ -57,13 +57,20 @@ int executor(const char **argv, const char *pattern, Options *Opt) {
   int num_files = 0;
   int flag_no_pattern_opt = CLEAR;
 
-	if (Opt->e) {
+	if (Opt->e || Opt->f) {
 		num_files = file_counter(argv, flag_no_pattern_opt);
 	} else {
 		flag_no_pattern_opt = SET;
 		pattern = argv[optind];
 		num_files = file_counter(argv, flag_no_pattern_opt);
 	}
+
+	//отладка
+//	printf("c in pattern = %d\n", pattern[strlen(pattern )]);
+//	printf("c in pattern = %d\n", pattern[strlen(pattern) - 1]);
+//	printf("c in pattern = %d\n", pattern[strlen(pattern) - 2]);
+//	printf("c in pattern = %d\n", pattern[strlen(pattern) - 3]);
+//	printf("pattern = %s\n", pattern);
 
   errcode = file_handler(argv, pattern, num_files, flag_no_pattern_opt, Opt);
   return (errcode);
@@ -149,26 +156,24 @@ int f_handler(char *pattern) {
 	FILE *file_pattern;
 	const char *file_name_pattern = optarg;
 
-	if (NULL == fopen(file_name_pattern, "r")) {
+	if ((file_pattern = fopen(file_name_pattern, "r")) == NULL) {
 		printf("s21_grep: %s: No such file or directory\n", file_name_pattern);
 		errcode = STOP;
 	} else {
+
 		char *buff_str_pattern = calloc(BUFF_SIZE, sizeof(char));
 
-		if (NULL == buff_str_pattern) errcode = STOP;
-
-		if (errcode == OK) {
-			int n = 0;
+		if (NULL == buff_str_pattern) {
+			printf("buff_str_pattern not allocated\n");
+			errcode = STOP;
+		} else {
 
 			while (NULL != fgets(buff_str_pattern, BUFF_SIZE, file_pattern)) {
-				n = strlen(buff_str_pattern);
 
-				if (buff_str_pattern[n] == '\n') {
+				init_pattern(pattern, buff_str_pattern);
 
-				}
-
-				n = 0;
 			}
+
 		}
 
 		if (NULL != buff_str_pattern) {
@@ -176,6 +181,8 @@ int f_handler(char *pattern) {
 			buff_str_pattern = NULL;
 		}
 	}
+
+//	printf("pattern = %s\n", pattern);
 
 	fclose(file_pattern);
 	return (errcode);
@@ -187,6 +194,12 @@ void init_pattern(char *pattern, const char *src) {
 	} else {
 		strcat(pattern, "|");
 		strcat(pattern, src);
+	}
+
+	int n = strlen(pattern);
+
+	if (pattern[n - 1] == '\n') {
+		pattern[n - 1] = '\0';
 	}
 }
 
@@ -218,7 +231,7 @@ int init_struct(Options *Opt, int symbol, char *pattern) {
       break;
     case 'f':
       Opt->f = SET;
-//			f_handler();
+			f_handler(pattern);
       break;
     case 's':
       Opt->s = SET;

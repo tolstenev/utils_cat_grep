@@ -13,18 +13,33 @@ enum error_codes {
 	ERROR = 2,
 };
 
+void init_pattern(char *pattern, const char *src) {
+	if (!pattern[0]) {
+		strcpy(pattern, src);
+	} else {
+		strcat(pattern, "|");
+		strcat(pattern, src);
+	}
+
+	int n = strlen(pattern);
+
+	if (pattern[n - 1] == '\n') {
+		pattern[n - 1] = '\0';
+	}
+}
+
 int main(int argc, char **argv) {
 	int errcode = OK;
 
+	char pattern[BUFF_SIZE] = {0};
+
 	FILE *file_pattern;
 	const char *file_name_pattern = argv[argc - 1];
-	printf("%s\n", file_name_pattern);
 
-	if (NULL == fopen(file_name_pattern, "r")) {
+	if ((file_pattern = fopen(file_name_pattern, "r")) == NULL) {
 		printf("s21_grep: %s: No such file or directory\n", file_name_pattern);
 		errcode = STOP;
 	} else {
-		printf("file was opened\n");
 
 		char *buff_str_pattern = calloc(BUFF_SIZE, sizeof(char));
 
@@ -32,47 +47,45 @@ int main(int argc, char **argv) {
 			printf("buff_str_pattern not allocated\n");
 			errcode = STOP;
 		} else {
-			if (errcode == OK) {
-				char sample[] = "texttexttext";
 
-				buff_str_pattern = sample;
+			while (NULL != fgets(buff_str_pattern, BUFF_SIZE, file_pattern)) {
 
-				printf("%s\n", buff_str_pattern);
-				printf("%s\n", file_name_pattern);
+				//TODO: потестить сюда ещё strlen
+				//TODO: ещё раз увидеть, что fgets возвращает строку с \n, даже если его нет в конце строки. он дописывает, \а если есть, то не трогает?\
+				//TODO: прописать основные кейсы, что получаем в pattern file и ожидаемое поведение
 
-				fgets(buff_str_pattern, BUFF_SIZE, file_pattern);
 
-//				printf("%s\n", buff_str_pattern);
+
+				printf("%s", buff_str_pattern);
+				init_pattern(pattern, buff_str_pattern);
+
+			}
+
+		}
+
+		if (NULL != buff_str_pattern) {
+			free(buff_str_pattern);
+			buff_str_pattern = NULL;
+		}
+	}
+
+	printf("pattern = %s\n", pattern);
+
+	fclose(file_pattern);
+	return (errcode);
+}
 
 
 /*
-			int n = 0;
-			unsigned short c = 0;
 
-			while (NULL != fgets(buff_str_pattern, BUFF_SIZE, file_pattern)) {
-				n = strlen(buff_str_pattern);
+char a[] = "123"; //    3
+char b[] = "123\n"; //  4
+char c[] = "123\0"; //  3
+char d[] = "\n"; //     1
+char e[] = "\0"; //     0
 
-				printf("\nc = %u\n", c);
-				printf("s = %s\n", buff_str_pattern);
-
-				if (buff_str_pattern[n] == '\n') {
-
-				}
-				n = 0;
-			}
-			}*/
-
-			}
-
-
-
-/*		if (NULL != buff_str_pattern) {
-			free(buff_str_pattern);
-			buff_str_pattern = NULL;
-		}*/
-		}
-
-		fclose(file_pattern);
-		return (errcode);
-	}
-}
+printf("a 123 = %lu\n", strlen(a));
+printf("b 123\\n = %lu\n", strlen(b));
+printf("c 123\\0 = %lu\n", strlen(c));
+printf("d \\n = %lu\n", strlen(d));
+printf("e \\0 = %lu\n", strlen(e));*/

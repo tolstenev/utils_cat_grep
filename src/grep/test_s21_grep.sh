@@ -1,8 +1,9 @@
 #!/bin/bash
 
 FILE="lyrics.txt"
- FLAGS="-e"
- PATTERN="le"
+ FLAGS="-f"
+ PATTERN="pattern.file"
+#PATTERN="pattern.file -f battern.file -e back"
 
 TEST_CASE="grep $FLAGS $PATTERN $FILE"
 
@@ -11,13 +12,13 @@ rm *.log
 clear
 make
 
-echo "------------------------"
+echo "------------------------------------------------"
 echo "orig: $TEST_CASE"
 $TEST_CASE
-echo "--------------"
+echo "------------------------------------------------"
 echo "s21_: ./s21_$TEST_CASE"
 ./s21_$TEST_CASE
-echo "--------------"
+echo "------------------------------------------------"
 
       $TEST_CASE > orig$FLAGS.log 
 ./s21_$TEST_CASE > s21_$FLAGS.log
@@ -30,7 +31,7 @@ if [ "$DIFF_RES" == "Files orig$FLAGS.log and s21_$FLAGS.log are identical" ]
   else
     echo -e "Test: \033[31m❌  Failed\033[0m"
 fi
-echo "--------------"
+echo "------------------------------------------------"
 
 
 #     $TEST_CASE > orig$FLAGS-$PATTERN.log 
