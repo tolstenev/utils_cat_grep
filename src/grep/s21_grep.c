@@ -11,7 +11,7 @@
 // void print_options(Options *Opt);
 
 int init_struct(Options *Opt, int symbol, char *pattern);
-void init_e_pattern(char *pattern);
+void init_pattern(char *pattern, const char *src);
 
 int executor(const char **argv, const char *pattern, Options *Opt);
 int file_handler(const char **argv, const char *pattern, int num_files,
@@ -21,6 +21,7 @@ void flag_handler(const char **argv, int index_file_arg, int num_files,
                   int num_str, char *buff_str, Options *Opt);
 
 void n_handler(int num_str, Options *Opt);
+int f_handler(char *pattern);
 
 int main(int argc, char **argv) {
   int errcode = OK;
@@ -33,17 +34,20 @@ int main(int argc, char **argv) {
     int opt_symbol = 0;
     char *optstring = "violnce:f:sh?";
 
-    while (-1 != (opt_symbol = getopt_long(argc, argv, optstring, 0, NULL))) {
+    while (-1 != (opt_symbol = getopt_long(argc, argv, optstring, 0, NULL)))
       errcode = init_struct(&Opt, opt_symbol, pattern);
 
-      if ((Opt.e || Opt.f) && (argc < 4)) errcode = ERROR;
-    }
-    if (errcode == OK) {
+		if ((Opt.e || Opt.f) && (argc < 4)) errcode = ERROR;
+		if ((!Opt.e && !Opt.f) && (argc < 3)) errcode = ERROR;
+
+    if (errcode == OK)
       executor((const char **)argv, pattern, &Opt);
-    }
   }
 
-  if (NULL != pattern) free((void *)pattern);
+  if (NULL != pattern) {
+		free((void *)pattern);
+		pattern = NULL;
+	}
 
   return (errcode);
 }
@@ -53,13 +57,14 @@ int executor(const char **argv, const char *pattern, Options *Opt) {
   int num_files = 0;
   int flag_no_pattern_opt = CLEAR;
 
-  if (!Opt->e) {
-    flag_no_pattern_opt = SET;
-    pattern = argv[optind];
-    num_files = file_counter(argv, flag_no_pattern_opt);
-  } else {
-    num_files = file_counter(argv, flag_no_pattern_opt);
-  }
+	if (Opt->e) {
+		num_files = file_counter(argv, flag_no_pattern_opt);
+	} else {
+		flag_no_pattern_opt = SET;
+		pattern = argv[optind];
+		num_files = file_counter(argv, flag_no_pattern_opt);
+	}
+
   errcode = file_handler(argv, pattern, num_files, flag_no_pattern_opt, Opt);
   return (errcode);
 }
@@ -122,7 +127,10 @@ int file_handler(const char **argv, const char *pattern, int num_files,
         }
       }
 
-      if (NULL != buff_str) free(buff_str);
+      if (NULL != buff_str) {
+				free(buff_str);
+				buff_str = NULL;
+			}
 
       regfree(&reg);
     }
@@ -135,7 +143,52 @@ void n_handler(int num_str, Options *Opt) {
   if (Opt->n) printf("%d:", num_str);
 }
 
-void init_e_pattern(char *pattern) { strcpy(pattern, optarg); }
+int f_handler(char *pattern) {
+	int errcode = OK;
+
+	FILE *file_pattern;
+	const char *file_name_pattern = optarg;
+
+	if (NULL == fopen(file_name_pattern, "r")) {
+		printf("s21_grep: %s: No such file or directory\n", file_name_pattern);
+		errcode = STOP;
+	} else {
+		char *buff_str_pattern = calloc(BUFF_SIZE, sizeof(char));
+
+		if (NULL == buff_str_pattern) errcode = STOP;
+
+		if (errcode == OK) {
+			int n = 0;
+
+			while (NULL != fgets(buff_str_pattern, BUFF_SIZE, file_pattern)) {
+				n = strlen(buff_str_pattern);
+
+				if (buff_str_pattern[n] == '\n') {
+
+				}
+
+				n = 0;
+			}
+		}
+
+		if (NULL != buff_str_pattern) {
+			free(buff_str_pattern);
+			buff_str_pattern = NULL;
+		}
+	}
+
+	fclose(file_pattern);
+	return (errcode);
+}
+
+void init_pattern(char *pattern, const char *src) {
+	if (!pattern[0]) {
+		strcpy(pattern, src);
+	} else {
+		strcat(pattern, "|");
+		strcat(pattern, src);
+	}
+}
 
 int init_struct(Options *Opt, int symbol, char *pattern) {
   int errcode = OK;
@@ -161,10 +214,11 @@ int init_struct(Options *Opt, int symbol, char *pattern) {
       break;
     case 'e':
       Opt->e = SET;
-      init_e_pattern(pattern);
+      init_pattern(pattern, optarg);
       break;
     case 'f':
       Opt->f = SET;
+//			f_handler();
       break;
     case 's':
       Opt->s = SET;

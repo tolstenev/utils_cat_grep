@@ -63,13 +63,13 @@ int main(int argc, char **argv) {
 					char c = argv[i - 1][1];
 					if (argv[i][0] != '-' ||
 						(argv[i - 1][0] != '-' && argv[i - 1][1] != 'f')) {
-							num_files = num_files + 1;
+						num_files = num_files + 1;
 
-							printf("a = %c\n", a);
-							printf("b = %c\n", b);
-							printf("c = %c\n", c);
-							printf("i am in\n");
-							printf("num_files = %d\n", num_files);
+						printf("a = %c\n", a);
+						printf("b = %c\n", b);
+						printf("c = %c\n", c);
+						printf("i am in\n");
+						printf("num_files = %d\n", num_files);
 
 					}
 				}
