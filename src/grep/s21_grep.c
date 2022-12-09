@@ -65,13 +65,6 @@ int executor(const char **argv, const char *pattern, Options *Opt) {
 		num_files = file_counter(argv, flag_no_pattern_opt);
 	}
 
-	//отладка
-//	printf("c in pattern = %d\n", pattern[strlen(pattern )]);
-//	printf("c in pattern = %d\n", pattern[strlen(pattern) - 1]);
-//	printf("c in pattern = %d\n", pattern[strlen(pattern) - 2]);
-//	printf("c in pattern = %d\n", pattern[strlen(pattern) - 3]);
-//	printf("pattern = %s\n", pattern);
-
   errcode = file_handler(argv, pattern, num_files, flag_no_pattern_opt, Opt);
   return (errcode);
 }
@@ -170,7 +163,12 @@ int f_handler(char *pattern) {
 
 			while (NULL != fgets(buff_str_pattern, BUFF_SIZE, file_pattern)) {
 
-				init_pattern(pattern, buff_str_pattern);
+				if ('\n' == *buff_str_pattern) {
+					strcpy(pattern, ".*\0");
+				} else {
+					buff_str_pattern[strlen(buff_str_pattern) - 1] = '\0'; // Затирание добавленного '\n' от функции fgets
+					init_pattern(pattern, buff_str_pattern);
+				}
 
 			}
 
@@ -182,8 +180,6 @@ int f_handler(char *pattern) {
 		}
 	}
 
-//	printf("pattern = %s\n", pattern);
-
 	fclose(file_pattern);
 	return (errcode);
 }
@@ -191,15 +187,11 @@ int f_handler(char *pattern) {
 void init_pattern(char *pattern, const char *src) {
 	if (!pattern[0]) {
 		strcpy(pattern, src);
+	} else if (strcmp(pattern, ".*") == 0) {
+		strcpy(pattern, ".*\0");
 	} else {
 		strcat(pattern, "|");
 		strcat(pattern, src);
-	}
-
-	int n = strlen(pattern);
-
-	if (pattern[n - 1] == '\n') {
-		pattern[n - 1] = '\0';
 	}
 }
 
