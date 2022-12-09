@@ -3,29 +3,24 @@
  * Yonn Argelia
  *
  * yonnarge@student.21-school.ru
+ *
+ * The programm "s21_grep" implement the bash util 'grep'
  */
 
 #include "s21_grep.h"
 
-// Debug functions
-// void print_options(Options *Opt);
-
-int init_struct(Options *Opt, int symbol, char *pattern);
-void init_pattern(char *pattern, const char *src);
-
-int executor(const char **argv, const char *pattern, Options *Opt);
-int file_handler(const char **argv, const char *pattern, int num_files,
-                 int flag_no_pattern_opt, Options *Opt);
-int file_counter(const char **argv, int flag_no_pattern_opt);
-void flag_handler(const char **argv, int index_file_arg, int num_files,
-                  int num_str, char *buff_str, Options *Opt);
-
-void n_handler(int num_str, Options *Opt);
-int f_handler(char *pattern);
-
+/**
+ * @brief Инициализация возвращаемого кода ошибки, структуры опций, первичная
+ * проверка входящих параметров
+ * @param argc
+ * @param argv
+ * @return
+ */
 int main(int argc, char **argv) {
   int errcode = OK;
   Options Opt = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+
+  // TODO: Подумать о замене на статитическое выделение памяти
   char *pattern = calloc(BUFF_SIZE, sizeof(char));
 
   if (NULL == pattern) errcode = STOP;
@@ -37,40 +32,55 @@ int main(int argc, char **argv) {
     while (-1 != (opt_symbol = getopt_long(argc, argv, optstring, 0, NULL)))
       errcode = init_struct(&Opt, opt_symbol, pattern);
 
-		if ((Opt.e || Opt.f) && (argc < 4)) errcode = ERROR;
-		if ((!Opt.e && !Opt.f) && (argc < 3)) errcode = ERROR;
+    if ((Opt.e || Opt.f) && (argc < 4)) errcode = ERROR;
+    if ((!Opt.e && !Opt.f) && (argc < 3)) errcode = ERROR;
 
-    if (errcode == OK)
-      executor((const char **)argv, pattern, &Opt);
+    if (errcode == OK) executor((const char **)argv, pattern, &Opt);
   }
 
   if (NULL != pattern) {
-		free((void *)pattern);
-		pattern = NULL;
-	}
+    free((void *)pattern);
+    pattern = NULL;
+  }
 
   return (errcode);
 }
 
+/**
+ * @brief Запускает выполнение всей работы программы
+ * @param argv
+ * @param pattern
+ * @param Opt
+ * @return
+ */
 int executor(const char **argv, const char *pattern, Options *Opt) {
   int errcode = OK;
   int num_files = 0;
   int flag_no_pattern_opt = CLEAR;
 
-	if (Opt->e || Opt->f) {
-		num_files = file_counter(argv, flag_no_pattern_opt);
-	} else {
-		flag_no_pattern_opt = SET;
-		pattern = argv[optind];
-		num_files = file_counter(argv, flag_no_pattern_opt);
-	}
+  if (Opt->e || Opt->f) {
+    num_files = file_counter(argv, flag_no_pattern_opt);
+  } else {
+    flag_no_pattern_opt = SET;
+    pattern = argv[optind];
+    num_files = file_counter(argv, flag_no_pattern_opt);
+  }
 
   errcode = file_handler(argv, pattern, num_files, flag_no_pattern_opt, Opt);
   return (errcode);
 }
 
-void flag_handler(const char **argv, int index_file_arg, int num_files,
-                  int num_str, char *buff_str, Options *Opt) {
+/**
+ * @brief Анализирует опции, с которыми была запущена программа
+ * @param argv
+ * @param index_file_arg
+ * @param num_files
+ * @param num_str
+ * @param buff_str
+ * @param Opt
+ */
+void opt_handler(const char **argv, int index_file_arg, int num_files,
+                 int num_str, char *buff_str, Options *Opt) {
   if (num_files > 1) printf("%s:", argv[index_file_arg]);
 
   n_handler(num_str, Opt);
@@ -80,6 +90,12 @@ void flag_handler(const char **argv, int index_file_arg, int num_files,
   if (buff_str[n] == '\0' && buff_str[n - 1] != '\n') putchar('\n');
 }
 
+/**
+ * @brief Считает количество файлов, в которых будет проходить поиск.
+ * @param argv
+ * @param flag_no_pattern_opt
+ * @return
+ */
 int file_counter(const char **argv, int flag_no_pattern_opt) {
   int num_files = 0;
   int ind = optind;
@@ -95,6 +111,15 @@ int file_counter(const char **argv, int flag_no_pattern_opt) {
   return (num_files);
 }
 
+/**
+ * @brief Обрабатывает файлы, в которых должен выполняться поиск
+ * @param argv
+ * @param pattern
+ * @param num_files
+ * @param flag_no_pattern_opt
+ * @param Opt
+ * @return
+ */
 int file_handler(const char **argv, const char *pattern, int num_files,
                  int flag_no_pattern_opt, Options *Opt) {
   int errcode = OK;
@@ -112,6 +137,7 @@ int file_handler(const char **argv, const char *pattern, int num_files,
 
       regcomp(&reg, pattern, REG_EXTENDED);
 
+      // TODO: Подумать о замене на статитическое выделение памяти
       char *buff_str = calloc(BUFF_SIZE, sizeof(char));
       int num_str = 1;
 
@@ -120,17 +146,17 @@ int file_handler(const char **argv, const char *pattern, int num_files,
       if (errcode == OK) {
         while (NULL != fgets(buff_str, BUFF_SIZE, file)) {
           if (0 == regexec(&reg, buff_str, 0, NULL, 0)) {
-            flag_handler(argv, index_file_arg, num_files, num_str, buff_str,
-                         Opt);
+            opt_handler(argv, index_file_arg, num_files, num_str, buff_str,
+                        Opt);
           }
           ++num_str;
         }
       }
 
       if (NULL != buff_str) {
-				free(buff_str);
-				buff_str = NULL;
-			}
+        free(buff_str);
+        buff_str = NULL;
+      }
 
       regfree(&reg);
     }
@@ -139,62 +165,90 @@ int file_handler(const char **argv, const char *pattern, int num_files,
   return (errcode);
 }
 
+/**
+ * @brief Обрабатывает поведение программы при опции '-n'
+ * @param num_str
+ * @param Opt
+ */
 void n_handler(int num_str, Options *Opt) {
   if (Opt->n) printf("%d:", num_str);
 }
 
+/**
+ * @brief Обрабатывает файлы, содержащие паттерны при запуске программы с опцией
+ * '-f'
+ * @param pattern
+ * @return
+ */
 int f_handler(char *pattern) {
-	int errcode = OK;
+  int errcode = OK;
 
-	FILE *file_pattern;
-	const char *file_name_pattern = optarg;
+  FILE *file_pattern;
+  const char *file_name_pattern = optarg;
 
-	if ((file_pattern = fopen(file_name_pattern, "r")) == NULL) {
-		printf("s21_grep: %s: No such file or directory\n", file_name_pattern);
-		errcode = STOP;
-	} else {
+  if ((file_pattern = fopen(file_name_pattern, "r")) == NULL) {
+    printf("s21_grep: %s: No such file or directory\n", file_name_pattern);
+    errcode = STOP;
+  } else {
+    // TODO: Подумать о замене на статитическое выделение памяти
+    char *buff_str_pattern = calloc(BUFF_SIZE, sizeof(char));
 
-		char *buff_str_pattern = calloc(BUFF_SIZE, sizeof(char));
+    if (NULL == buff_str_pattern) {
+      printf("buff_str_pattern not allocated\n");
+      errcode = STOP;
+    } else {
+      while (NULL != fgets(buff_str_pattern, BUFF_SIZE, file_pattern)) {
+        if ('\n' == *buff_str_pattern) {
+          strcpy(pattern, ".*\0");  // Если есть пустая строка, то вывод всего
+                                    // содержимого. Для этого - "шаблон всего"
+                                    // (любой символ любое количество раз)
+        } else {
+          buff_str_pattern[strlen(buff_str_pattern) - 1] =
+              '\0';  // Затирание добавленного '\n' от функции fgets
+          init_pattern(pattern, buff_str_pattern);
+        }
+      }
+    }
 
-		if (NULL == buff_str_pattern) {
-			printf("buff_str_pattern not allocated\n");
-			errcode = STOP;
-		} else {
+    if (NULL != buff_str_pattern) {
+      free(buff_str_pattern);
+      buff_str_pattern = NULL;
+    }
+  }
 
-			while (NULL != fgets(buff_str_pattern, BUFF_SIZE, file_pattern)) {
-
-				if ('\n' == *buff_str_pattern) {
-					strcpy(pattern, ".*\0");
-				} else {
-					buff_str_pattern[strlen(buff_str_pattern) - 1] = '\0'; // Затирание добавленного '\n' от функции fgets
-					init_pattern(pattern, buff_str_pattern);
-				}
-
-			}
-
-		}
-
-		if (NULL != buff_str_pattern) {
-			free(buff_str_pattern);
-			buff_str_pattern = NULL;
-		}
-	}
-
-	fclose(file_pattern);
-	return (errcode);
+  fclose(file_pattern);
+  return (errcode);
 }
 
+/**
+ * @brief Заполняет шаблон паттерна, который будет использоваться для поиска в
+ * регулярном выражении
+ * @param pattern
+ * @param src
+ */
 void init_pattern(char *pattern, const char *src) {
-	if (!pattern[0]) {
-		strcpy(pattern, src);
-	} else if (strcmp(pattern, ".*") == 0) {
-		strcpy(pattern, ".*\0");
-	} else {
-		strcat(pattern, "|");
-		strcat(pattern, src);
-	}
+  if (!pattern[0]) {  // Если паттерн пустой (первый символ - ноль,
+                      // инвертированный для захождения в условие), то просто
+                      // записываем в него src
+    strcpy(pattern, src);
+  } else if (strcmp(pattern, ".*") ==
+             0) {  // Если в паттерне "шаблон всего", то ничего не должно
+                   // измениться (записали то же самое поверх)
+    strcpy(pattern, ".*\0");
+  } else {  // Иначе дописали новый шаблон через оператор регулярного выражения
+            // "или"
+    strcat(pattern, "|");
+    strcat(pattern, src);
+  }
 }
 
+/**
+ * @brief Инициализация структуры опций программы
+ * @param Opt
+ * @param symbol
+ * @param pattern
+ * @return errcode - код ошибки
+ */
 int init_struct(Options *Opt, int symbol, char *pattern) {
   int errcode = OK;
 
@@ -223,7 +277,7 @@ int init_struct(Options *Opt, int symbol, char *pattern) {
       break;
     case 'f':
       Opt->f = SET;
-			f_handler(pattern);
+      f_handler(pattern);
       break;
     case 's':
       Opt->s = SET;
@@ -232,34 +286,7 @@ int init_struct(Options *Opt, int symbol, char *pattern) {
       Opt->h = SET;
       break;
     case '?':
-      // Закомментил default, потому что пока не корректно работает без
-      // обработки флага -е
-      //		default:
-      //			puts("s21_grep: unrecognized option");
       errcode = ERROR;
   }
   return (errcode);
 }
-
-// Отладочный вывод структуры с флагами
-/*void print_options(Options *Opt) {
-        printf("Opt.v = %u\n", Opt->v);
-        printf("Opt.i = %u\n", Opt->i);
-        printf("Opt.o = %u\n", Opt->o);
-        printf("Opt.l = %u\n", Opt->l);
-        printf("Opt.n = %u\n", Opt->n);
-        printf("Opt.c = %u\n", Opt->c);
-        printf("Opt.e = %u\n", Opt->e);
-        printf("Opt.f = %u\n", Opt->f);
-        printf("Opt.s = %u\n", Opt->s);
-        printf("Opt.h = %u\n", Opt->h);
-}*/
-
-// Отладочный вывод переменных в main
-/*
-if (!errcode) {
-                printf("optind = %d\n", optind);
-                printf("file_name = %s\n", argv[optind]);
-                printf("optarg = %s\n", optarg);
-                printf("pattern = %s\n", pattern);
-}*/
