@@ -132,7 +132,9 @@ int file_handler(const char **argv, const char *pattern, int num_files,
       char opt_l_handling_is = CLEAR;
       regex_t reg;
 
-      regcomp(&reg, pattern, REG_EXTENDED);
+      // Попробовать убрать REG_EXTENDED в первом случае
+      Opt->i ? regcomp(&reg, pattern, REG_ICASE)
+             : regcomp(&reg, pattern, REG_EXTENDED);
 
       while (NULL != fgets(buff_str, BUFF_SIZE, file_pointer)) {
         if (OK == regexec(&reg, buff_str, 0, NULL, 0)) {
