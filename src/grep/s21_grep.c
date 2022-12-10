@@ -20,13 +20,8 @@ int main(int argc, char **argv) {
   int errcode = OK;
   Options Opt = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-  // TODO: Подумать о замене на статитическое выделение памяти
-//  char *pattern = calloc(BUFF_SIZE, sizeof(char));
   char pattern[BUFF_SIZE] = {0};
 
-//  if (NULL == pattern) errcode = STOP;
-
-//  if ((errcode == OK) && (argc > 2)) {
   if (argc > 2) {
     int opt_symbol = 0;
     char *optstring = "violnce:f:sh?";
@@ -34,17 +29,11 @@ int main(int argc, char **argv) {
     while (-1 != (opt_symbol = getopt_long(argc, argv, optstring, 0, NULL)))
       errcode = init_struct(&Opt, opt_symbol, pattern);
 
-    if ((Opt.e || Opt.f) && (argc < 4)) errcode = ERROR;
-    if ((!Opt.e && !Opt.f) && (argc < 3)) errcode = ERROR;
+    if ((Opt.e || Opt.f) & (argc < 4)) errcode = ERROR;
+    if ((!Opt.e & !Opt.f) & (argc < 3)) errcode = ERROR;
 
     if (errcode == OK) executor((const char **)argv, pattern, &Opt);
   }
-
-//  if (NULL != pattern) {
-//    free((void *)pattern);
-//    pattern = NULL;
-//  }
-
   return (errcode);
 }
 
@@ -60,7 +49,7 @@ int executor(const char **argv, const char *pattern, Options *Opt) {
   int num_files = 0;
   int flag_no_pattern_opt = CLEAR;
 
-  if (Opt->e || Opt->f) {
+  if (Opt->e | Opt->f) {
     num_files = file_counter(argv, flag_no_pattern_opt);
   } else {
     flag_no_pattern_opt = SET;
@@ -69,6 +58,7 @@ int executor(const char **argv, const char *pattern, Options *Opt) {
   }
 
   errcode = file_handler(argv, pattern, num_files, flag_no_pattern_opt, Opt);
+
   return (errcode);
 }
 
@@ -83,13 +73,15 @@ int executor(const char **argv, const char *pattern, Options *Opt) {
  */
 void opt_handler(const char **argv, int index_file_arg, int num_files,
                  int num_str, char *buff_str, Options *Opt) {
-  if (num_files > 1) printf("%s:", argv[index_file_arg]);
+	if (Opt->c == 0){
+		if (num_files > 1) printf("%s:", argv[index_file_arg]);
 
-  n_handler(num_str, Opt);
-  fputs(buff_str, stdout);
+		n_handler(num_str, Opt);
+		fputs(buff_str, stdout);
 
-  int n = strlen(buff_str);
-  if (buff_str[n] == '\0' && buff_str[n - 1] != '\n') putchar('\n');
+		int n = strlen(buff_str);
+		if (buff_str[n] == '\0' && buff_str[n - 1] != '\n') putchar('\n');
+	}
 }
 
 /**
@@ -109,7 +101,6 @@ int file_counter(const char **argv, int flag_no_pattern_opt) {
       num_files += 1;
     }
   }
-
   return (num_files);
 }
 
@@ -130,43 +121,36 @@ int file_handler(const char **argv, const char *pattern, int num_files,
     FILE *file_pointer;
     int index_file_arg = optind + index_loop + flag_no_pattern_opt;
     const char *file_name = argv[index_file_arg];
+		unsigned int num_matching_strings = 0;
 
-		if (NULL == (file_pointer = fopen(file_name, "r"))) {
+    if (NULL == (file_pointer = fopen(file_name, "r"))) {
       fprintf(stderr, "s21_grep: %s: %s\n", file_name, strerror(errno));
       errcode = STOP;
     } else {
+      char buff_str[BUFF_SIZE] = {0};
+      int num_str = 1;
       regex_t reg;
 
       regcomp(&reg, pattern, REG_EXTENDED);
 
-      // TODO: Подумать о замене на статитическое выделение памяти
-//      char *buff_str = calloc(BUFF_SIZE, sizeof(char));
-      char buff_str[BUFF_SIZE] = {0};
-      int num_str = 1;
+      while (NULL != fgets(buff_str, BUFF_SIZE, file_pointer)) {
+        if (0 == regexec(&reg, buff_str, 0, NULL, 0)) {
+					if (Opt->c) Opt->l ? num_matching_strings = 1 :
+                             ++num_matching_strings;
 
-//      if (NULL == buff_str) errcode = STOP;
-
-//      if (errcode == OK) {
-        while (NULL != fgets(buff_str, BUFF_SIZE, file_pointer)) {
-          if (0 == regexec(&reg, buff_str, 0, NULL, 0)) {
-            opt_handler(argv, index_file_arg, num_files, num_str, buff_str,
-                        Opt);
-          }
-          ++num_str;
+          opt_handler(argv, index_file_arg, num_files, num_str, buff_str, Opt);
         }
-//      }
+        ++num_str;
+      }
 
-//      if (NULL != buff_str) {
-//        free(buff_str);
-//        buff_str = NULL;
-//      }
+			if (Opt->c)
+				c_handler(Opt, num_files, file_name, num_matching_strings);
 
       regfree(&reg);
     }
-		fclose(file_pointer);
+    fclose(file_pointer);
   }
-
-	return (errcode);
+  return (errcode);
 }
 
 /**
@@ -176,6 +160,13 @@ int file_handler(const char **argv, const char *pattern, int num_files,
  */
 void n_handler(int num_str, Options *Opt) {
   if (Opt->n) printf("%d:", num_str);
+}
+
+void c_handler(Options *Opt, int num_files, const char *file_name, unsigned int	num_matching_strings) {
+	if ((num_files > 1) & !Opt->h)
+		printf("%s:%d\n", file_name, num_matching_strings);
+	else
+		printf("%d\n", num_matching_strings);
 }
 
 /**
@@ -191,36 +182,23 @@ int f_handler(char *pattern) {
   const char *file_name_pattern = optarg;
 
   if ((file_pattern_pointer = fopen(file_name_pattern, "r")) == NULL) {
-		fprintf(stderr, "s21_grep: %s: %s\n", file_name_pattern, strerror(errno));
-		errcode = STOP;
+    fprintf(stderr, "s21_grep: %s: %s\n", file_name_pattern, strerror(errno));
+    errcode = STOP;
   } else {
-    // TODO: Подумать о замене на статитическое выделение памяти
-//    char *buff_str_pattern = calloc(BUFF_SIZE, sizeof(char));
     char buff_str_pattern[BUFF_SIZE] = {0};
 
-//    if (NULL == buff_str_pattern) {
-//      printf("buff_str_pattern not allocated\n");
-//      errcode = STOP;
-//    } else {
-      while (NULL != fgets(buff_str_pattern, BUFF_SIZE, file_pattern_pointer)) {
-        if ('\n' == *buff_str_pattern) {
-          strcpy(pattern, ".*\0");  // Если есть пустая строка, то вывод всего
-                                    // содержимого. Для этого - "шаблон всего"
-                                    // (любой символ любое количество раз)
-        } else {
-          buff_str_pattern[strlen(buff_str_pattern) - 1] =
-              '\0';  // Затирание добавленного '\n' от функции fgets
-          init_pattern(pattern, buff_str_pattern);
-        }
+    while (NULL != fgets(buff_str_pattern, BUFF_SIZE, file_pattern_pointer)) {
+      if ('\n' == *buff_str_pattern) {
+        strcpy(pattern, ".*\0");  // Если есть пустая строка, то вывод всего
+                                  // содержимого. Для этого - "шаблон всего"
+                                  // (любой символ любое количество раз)
+      } else {
+        buff_str_pattern[strlen(buff_str_pattern) - 1] =
+            '\0';  // Затирание добавленного '\n' от функции fgets
+        init_pattern(pattern, buff_str_pattern);
       }
-//    }
-
-//    if (NULL != buff_str_pattern) {
-//      free(buff_str_pattern);
-//      buff_str_pattern = NULL;
-//    }
+    }
   }
-
   fclose(file_pattern_pointer);
   return (errcode);
 }
@@ -238,10 +216,10 @@ void init_pattern(char *pattern, const char *src) {
     strcpy(pattern, src);
   } else if (strcmp(pattern, ".*") ==
              0) {  // Если в паттерне "шаблон всего", то ничего не должно
-                   // измениться (записали то же самое поверх)
+                   // измениться (записываем то же самое поверх)
     strcpy(pattern, ".*\0");
-  } else {  // Иначе дописали новый шаблон через оператор регулярного выражения
-            // "или"
+  } else {  // Иначе дописываем новый шаблон через оператор регулярного
+            // выражения "или"
     strcat(pattern, "|");
     strcat(pattern, src);
   }

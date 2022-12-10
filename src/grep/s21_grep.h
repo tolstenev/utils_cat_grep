@@ -58,5 +58,6 @@ void opt_handler(const char **argv, int index_file_arg, int num_files,
 
 void n_handler(int num_str, Options *Opt);
 int f_handler(char *pattern);
+void c_handler(Options *Opt, int num_files, const char *file_name, unsigned int	num_matching_strings);
 
 #endif  // SRC_GREP_S21_GREP_H_

@@ -1,8 +1,8 @@
 #!/bin/bash
 
 FILE="lyrics.txt"
- FLAGS="-f"
-# PATTERN="pattern.file"
+ FLAGS="-cf"
+ PATTERN="c"
 PATTERN="pattern.file -e back"
 #PATTERN="pattern.file -f battern.file -e back"
 
