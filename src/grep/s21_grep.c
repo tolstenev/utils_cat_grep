@@ -128,16 +128,15 @@ int file_handler(const char **argv, const char *pattern, int num_files,
       errcode = STOP;
     } else {
       char buff_str[BUFF_SIZE] = {0};
-      int num_str = 1;
       char opt_l_handling_is = CLEAR;
       regex_t reg;
 
-      // Попробовать убрать REG_EXTENDED в первом случае
       Opt->i ? regcomp(&reg, pattern, REG_ICASE)
              : regcomp(&reg, pattern, REG_EXTENDED);
 
-      while (NULL != fgets(buff_str, BUFF_SIZE, file_pointer)) {
-        if (OK == regexec(&reg, buff_str, 0, NULL, 0)) {
+			for (int num_str = 1; NULL != fgets(buff_str, BUFF_SIZE, file_pointer); ++num_str) {
+        if ((!Opt->v && (regexec(&reg, buff_str, 0, NULL, 0) == OK)) ||
+					   (Opt->v && (regexec(&reg, buff_str, 0, NULL, 0) != OK))) {
           if (Opt->c)
             Opt->l ? num_matching_strings = 1 : ++num_matching_strings;
           if (!Opt->l) {
@@ -146,7 +145,6 @@ int file_handler(const char **argv, const char *pattern, int num_files,
             opt_l_handling_is = SET;
           }
         }
-        ++num_str;
       }
 
       if (Opt->c) c_handler(Opt, num_files, file_name, num_matching_strings);

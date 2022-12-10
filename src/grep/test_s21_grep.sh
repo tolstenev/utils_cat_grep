@@ -1,9 +1,9 @@
 #!/bin/bash
 
 FILE="lyrics.txt"
-FILE="pattern.file battern.file"
- FLAGS="-cl"
- PATTERN="rock"
+#FILE="lyrics.txt pattern.file battern.file"
+ FLAGS="-v"
+ PATTERN="m"
 # PATTERN="pattern.file -e back"
 # PATTERN="pattern.file -f battern.file -e back"
 # PATTERN="pattern.file -f battern.file -e back"
