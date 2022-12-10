@@ -16,7 +16,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define BUFF_SIZE 1024
+#define SIZE 1024
 
 extern int errno;
 
@@ -49,16 +49,16 @@ enum option_codes {
 int init_struct(Options *Opt, int symbol, char *pattern);
 void init_pattern(char *pattern, const char *src);
 
-int executor(const char **argv, const char *pattern, Options *Opt);
+int executor(const char **argv, const char *pattern, Options const *Opt);
 int file_handler(const char **argv, const char *pattern, int num_files,
-                 int flag_no_pattern_opt, Options *Opt);
+                 int flag_no_pattern_opt, Options const *Opt);
 int file_counter(const char **argv, int flag_no_pattern_opt);
 void opt_handler(const char **argv, int ind_file_arg, int num_files,
-                 int num_str, char *buff_str, Options *Opt);
+								 int num_str, char *buff_str, Options const *Opt);
 
-void n_handler(int num_str, Options *Opt);
+void n_handler(int num_str, Options const *Opt);
 int f_handler(char *pattern);
-void c_handler(Options *Opt, int num_files, const char *file_name,
+void c_handler(Options const *Opt, int num_files, const char *file_name,
                unsigned int num_matching_strings);
 
 #endif  // SRC_GREP_S21_GREP_H_
