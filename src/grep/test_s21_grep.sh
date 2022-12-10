@@ -1,10 +1,12 @@
 #!/bin/bash
 
 FILE="lyrics.txt"
- FLAGS="-cf"
- PATTERN="c"
-PATTERN="pattern.file -e back"
-#PATTERN="pattern.file -f battern.file -e back"
+FILE="pattern.file battern.file"
+ FLAGS="-cl"
+ PATTERN="rock"
+# PATTERN="pattern.file -e back"
+# PATTERN="pattern.file -f battern.file -e back"
+# PATTERN="pattern.file -f battern.file -e back"
 
 TEST_CASE="grep $FLAGS $PATTERN $FILE"
 

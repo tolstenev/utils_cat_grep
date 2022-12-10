@@ -65,23 +65,23 @@ int executor(const char **argv, const char *pattern, Options *Opt) {
 /**
  * @brief Анализирует опции, с которыми была запущена программа
  * @param argv
- * @param index_file_arg
+ * @param ind_file_arg
  * @param num_files
  * @param num_str
  * @param buff_str
  * @param Opt
  */
-void opt_handler(const char **argv, int index_file_arg, int num_files,
+void opt_handler(const char **argv, int ind_file_arg, int num_files,
                  int num_str, char *buff_str, Options *Opt) {
-	if (Opt->c == 0){
-		if (num_files > 1) printf("%s:", argv[index_file_arg]);
+  if (Opt->c == 0) {
+    if (num_files > 1) printf("%s:", argv[ind_file_arg]);
 
-		n_handler(num_str, Opt);
-		fputs(buff_str, stdout);
+    n_handler(num_str, Opt);
+    fputs(buff_str, stdout);
 
-		int n = strlen(buff_str);
-		if (buff_str[n] == '\0' && buff_str[n - 1] != '\n') putchar('\n');
-	}
+    int n = strlen(buff_str);
+    if (buff_str[n] == '\0' && buff_str[n - 1] != '\n') putchar('\n');
+  }
 }
 
 /**
@@ -119,9 +119,9 @@ int file_handler(const char **argv, const char *pattern, int num_files,
 
   for (int index_loop = 0; index_loop < num_files; ++index_loop) {
     FILE *file_pointer;
-    int index_file_arg = optind + index_loop + flag_no_pattern_opt;
-    const char *file_name = argv[index_file_arg];
-		unsigned int num_matching_strings = 0;
+    int ind_file_arg = optind + index_loop + flag_no_pattern_opt;
+    const char *file_name = argv[ind_file_arg];
+    unsigned int num_matching_strings = 0;
 
     if (NULL == (file_pointer = fopen(file_name, "r"))) {
       fprintf(stderr, "s21_grep: %s: %s\n", file_name, strerror(errno));
@@ -129,22 +129,26 @@ int file_handler(const char **argv, const char *pattern, int num_files,
     } else {
       char buff_str[BUFF_SIZE] = {0};
       int num_str = 1;
+      char opt_l_handling_is = CLEAR;
       regex_t reg;
 
       regcomp(&reg, pattern, REG_EXTENDED);
 
       while (NULL != fgets(buff_str, BUFF_SIZE, file_pointer)) {
-        if (0 == regexec(&reg, buff_str, 0, NULL, 0)) {
-					if (Opt->c) Opt->l ? num_matching_strings = 1 :
-                             ++num_matching_strings;
-
-          opt_handler(argv, index_file_arg, num_files, num_str, buff_str, Opt);
+        if (OK == regexec(&reg, buff_str, 0, NULL, 0)) {
+          if (Opt->c)
+            Opt->l ? num_matching_strings = 1 : ++num_matching_strings;
+          if (!Opt->l) {
+            opt_handler(argv, ind_file_arg, num_files, num_str, buff_str, Opt);
+          } else {
+            opt_l_handling_is = SET;
+          }
         }
         ++num_str;
       }
 
-			if (Opt->c)
-				c_handler(Opt, num_files, file_name, num_matching_strings);
+      if (Opt->c) c_handler(Opt, num_files, file_name, num_matching_strings);
+      if (opt_l_handling_is == SET) printf("%s\n", file_name);
 
       regfree(&reg);
     }
@@ -162,11 +166,12 @@ void n_handler(int num_str, Options *Opt) {
   if (Opt->n) printf("%d:", num_str);
 }
 
-void c_handler(Options *Opt, int num_files, const char *file_name, unsigned int	num_matching_strings) {
-	if ((num_files > 1) & !Opt->h)
-		printf("%s:%d\n", file_name, num_matching_strings);
-	else
-		printf("%d\n", num_matching_strings);
+void c_handler(Options *Opt, int num_files, const char *file_name,
+               unsigned int num_matching_strings) {
+  if ((num_files > 1) & !Opt->h)
+    printf("%s:%d\n", file_name, num_matching_strings);
+  else
+    printf("%d\n", num_matching_strings);
 }
 
 /**
@@ -210,16 +215,21 @@ int f_handler(char *pattern) {
  * @param src
  */
 void init_pattern(char *pattern, const char *src) {
-  if (!pattern[0]) {  // Если паттерн пустой (первый символ - ноль,
-                      // инвертированный для захождения в условие), то просто
-                      // записываем в него src
+  // Если src не задан (пустой шаблон, то программа выведет
+  // анализируемый текст полностью (".*" - любой символ любое
+  // количество раз (шаблон всего))
+  if (0 == *src) strcpy(pattern, ".*\0");
+
+  // Если паттерн пустой (первый символ - ноль,
+  // инвертированный для захождения в условие), то просто
+  // записываем в него src
+  if (!pattern[0]) {
     strcpy(pattern, src);
-  } else if (strcmp(pattern, ".*") ==
-             0) {  // Если в паттерне "шаблон всего", то ничего не должно
-                   // измениться (записываем то же самое поверх)
-    strcpy(pattern, ".*\0");
-  } else {  // Иначе дописываем новый шаблон через оператор регулярного
-            // выражения "или"
+
+    // Иначе если в паттерне "шаблон всего", то шаблон не должен
+    // измениться, а если нет (т.е. паттерн другой), то дописываем новый src
+    // через оператор регулярного выражения "или"
+  } else if (strcmp(pattern, ".*") != 0) {
     strcat(pattern, "|");
     strcat(pattern, src);
   }
