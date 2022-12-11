@@ -53,12 +53,17 @@ int executor(const char **argv, const char *pattern, Options const *Opt);
 int file_handler(const char **argv, const char *pattern, int num_files,
                  int flag_no_pattern_opt, Options const *Opt);
 int file_counter(const char **argv, int flag_no_pattern_opt);
-void opt_handler(const char **argv, int ind_file_arg, int num_files,
-								 int num_str, char *buff_str, Options const *Opt);
+int opt_handler(const char **argv, int ind_file_arg, int num_files,
+								 int num_str, char *buf_str, const char *pattern, Options const *Opt);
 
-void n_handler(int num_str, Options const *Opt);
+void n_handler(Options const *Opt, int num_str);
 int f_handler(char *pattern);
 void c_handler(Options const *Opt, int num_files, const char *file_name,
                unsigned int num_matching_strings);
+//int o_handler(Options const *Opt, char *buf_str, const char *pattern);
+
+
+int o_handler(Options const *Opt, char *buffer, const char *pattern);
+
 
 #endif  // SRC_GREP_S21_GREP_H_

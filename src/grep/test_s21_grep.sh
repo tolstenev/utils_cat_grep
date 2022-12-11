@@ -1,12 +1,13 @@
 #!/bin/bash
 
-FILE="lyrics.txt"
-#FILE="lyrics.txt pattern.file battern.file"
- FLAGS="-v"
+# Smoke test
+#FLAGS="-f"
+#PATTERN="pattern.file -e Your"
+#FILE="lyrics.txt"
+
+ FLAGS="-no"
  PATTERN="m"
-# PATTERN="pattern.file -e back"
-# PATTERN="pattern.file -f battern.file -e back"
-# PATTERN="pattern.file -f battern.file -e back"
+ FILE="lyrics.txt"
 
 TEST_CASE="grep $FLAGS $PATTERN $FILE"
 

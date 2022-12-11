@@ -30,9 +30,9 @@ int main(int argc, char **argv) {
       errcode = init_struct(&Opt, opt_symbol, pattern);
 
     if ((Opt.e || Opt.f) & (argc < 4)) errcode = ERROR;
-    if ((!Opt.e & !Opt.f) & (argc < 3)) errcode = ERROR;
+    if ((!Opt.e && !Opt.f) & (argc < 3)) errcode = ERROR;
 
-    if (errcode == OK) executor((const char **)argv, pattern, &Opt);
+    if (OK == errcode) executor((const char **)argv, pattern, &Opt);
   }
   return (errcode);
 }
@@ -49,7 +49,7 @@ int executor(const char **argv, const char *pattern, Options const *Opt) {
   int num_files = 0;
   int flag_no_pattern_opt = CLEAR;
 
-  if (Opt->e | Opt->f) {
+  if (Opt->e || Opt->f) {
     num_files = file_counter(argv, flag_no_pattern_opt);
   } else {
     flag_no_pattern_opt = SET;
@@ -68,20 +68,59 @@ int executor(const char **argv, const char *pattern, Options const *Opt) {
  * @param ind_file_arg
  * @param num_files
  * @param num_str
- * @param buff_str
+ * @param buf_str
  * @param Opt
  */
-void opt_handler(const char **argv, int ind_file_arg, int num_files,
-                 int num_str, char *buff_str, Options const *Opt) {
-  if (Opt->c == 0) {
+int opt_handler(const char **argv, int ind_file_arg, int num_files,
+                 int num_str, char *buf_str, const char *pattern, Options const *Opt) {
+	int errcode = OK;
+
+	if (Opt->c == 0) {
     if (num_files > 1) printf("%s:", argv[ind_file_arg]);
 
-    n_handler(num_str, Opt);
-    fputs(buff_str, stdout);
+    n_handler(Opt, num_str);
 
-    int n = strlen(buff_str);
-    if (buff_str[n] == '\0' && buff_str[n - 1] != '\n') putchar('\n');
+		if (Opt->o && Opt->v == 0) errcode = o_handler(Opt, buf_str, pattern);
+		else fputs(buf_str, stdout);
+
+    int n = strlen(buf_str);
+    if (buf_str[n] == '\0' && buf_str[n - 1] != '\n') putchar('\n');
   }
+	return (errcode);
+}
+
+/**
+ * @brief Обрабатывает поведение программы при опции '-o'
+ * @param Opt
+ * @param buf_str
+ * @param pattern
+ * @return
+ */
+int o_handler(Options const *Opt, char *buf_str, const char *pattern) {
+	int errcode = OK;
+	regex_t preg;
+	regmatch_t pmatch[SIZE];
+	int rc = 1;
+	char reg_errbuf[128] = {0};
+	char *s = buf_str;
+
+	if (OK != (rc = Opt->i ? regcomp(&preg, pattern, REG_EXTENDED | REG_ICASE)
+													: regcomp(&preg, pattern, REG_EXTENDED))) {
+		regerror(rc, &preg, reg_errbuf, 128);
+		fprintf(stderr, "Compilation failed: '%s'\n", reg_errbuf);
+		errcode = ERROR;
+		regfree(&preg);
+	} else if (OK == rc && !Opt->v) {
+		for (int i = 0; buf_str[i] != '\0'; ++i) {
+			if (regexec(&preg, s, 1, pmatch, 0) != Opt->v)
+				break;
+			printf("%.*s\n", (int)(pmatch[0].rm_eo - pmatch[0].rm_so),
+						 s + pmatch[0].rm_so);
+			s += pmatch[0].rm_eo;
+		}
+	}
+	regfree(&preg);
+	return (errcode);
 }
 
 /**
@@ -128,31 +167,40 @@ int file_handler(const char **argv, const char *pattern, int num_files,
       	fprintf(stderr, "s21_grep: %s: %s\n", file_name, strerror(errno));
       errcode = STOP;
     } else {
-      char buff_str[SIZE] = {0};
+      char buf_str[SIZE] = {0};
       char opt_l_handling_is = CLEAR;
-      regex_t reg;
+      regex_t preg;
+			int rc = 0;
+			char reg_errbuf[128] = {0};
 
-      Opt->i ? regcomp(&reg, pattern, REG_EXTENDED | REG_ICASE)
-             : regcomp(&reg, pattern, REG_EXTENDED);
+      if (OK != (rc = (Opt->i ? regcomp(&preg, pattern, REG_EXTENDED | REG_ICASE)
+                             : regcomp(&preg, pattern, REG_EXTENDED)))) {
+				regerror(rc, &preg, reg_errbuf, 128);
+				fprintf(stderr, "Compilation failed: '%s'\n", reg_errbuf);
+				errcode = ERROR;
+				regfree(&preg);
+			}
 
-      for (int num_str = 1; NULL != fgets(buff_str, SIZE, file_ptr);
-           ++num_str) {
-        if ((!Opt->v && (regexec(&reg, buff_str, 0, NULL, 0) == OK)) ||
-            (Opt->v && (regexec(&reg, buff_str, 0, NULL, 0) != OK))) {
-          if (Opt->c)
-            Opt->l ? num_matching_strings = 1 : ++num_matching_strings;
-          if (Opt->l) {
-            opt_l_handling_is = SET;
-          } else {
-            opt_handler(argv, ind_file_arg, num_files, num_str, buff_str, Opt);
-          }
-        }
-      }
+			if (OK == errcode) {
+				for (int num_str = 1; NULL != fgets(buf_str, SIZE, file_ptr);
+						 ++num_str) {
+					if ((!Opt->v && (regexec(&preg, buf_str, 0, NULL, 0) == OK)) ||
+						(Opt->v && (regexec(&preg, buf_str, 0, NULL, 0) != OK))) {
+						if (Opt->c)
+							Opt->l ? num_matching_strings = 1 : ++num_matching_strings;
+						if (Opt->l) {
+							opt_l_handling_is = SET;
+						} else {
+							errcode = opt_handler(argv, ind_file_arg, num_files, num_str, buf_str, pattern, Opt);
+						}
+					}
+				}
+			}
 
       if (Opt->c) c_handler(Opt, num_files, file_name, num_matching_strings);
       if (opt_l_handling_is == SET) printf("%s\n", file_name);
 
-      regfree(&reg);
+      regfree(&preg);
     }
     fclose(file_ptr);
   }
@@ -164,13 +212,13 @@ int file_handler(const char **argv, const char *pattern, int num_files,
  * @param num_str
  * @param Opt
  */
-void n_handler(int num_str, Options const *Opt) {
-  if (Opt->n) printf("%d:", num_str);
+void n_handler(Options const *Opt, int num_str) {
+	if (Opt->n) printf("%d:", num_str);
 }
 
 void c_handler(Options const *Opt, int num_files, const char *file_name,
                unsigned int num_matching_strings) {
-  if ((num_files > 1) & !Opt->h)
+  if ((num_files > 1) && !Opt->h)
     printf("%s:%d\n", file_name, num_matching_strings);
   else
     printf("%d\n", num_matching_strings);
@@ -192,17 +240,17 @@ int f_handler(char *pattern) {
 		fprintf(stderr, "s21_grep: %s: %s\n", file_name_pattern, strerror(errno));
     errcode = STOP;
   } else {
-    char buff_str_pattern[SIZE] = {0};
+    char buf_str_pattern[SIZE] = {0};
 
-    while (NULL != fgets(buff_str_pattern, SIZE, file_pattern_pointer)) {
-      if ('\n' == *buff_str_pattern) {
+    while (NULL != fgets(buf_str_pattern, SIZE, file_pattern_pointer)) {
+      if ('\n' == *buf_str_pattern) {
         strcpy(pattern, ".*\0");  // Если есть пустая строка, то вывод всего
                                   // содержимого. Для этого - "шаблон всего"
                                   // (любой символ любое количество раз)
       } else {
-        buff_str_pattern[strlen(buff_str_pattern) - 1] =
+        buf_str_pattern[strlen(buf_str_pattern) - 1] =
             '\0';  // Затирание добавленного '\n' от функции fgets
-        init_pattern(pattern, buff_str_pattern);
+        init_pattern(pattern, buf_str_pattern);
       }
     }
   }
