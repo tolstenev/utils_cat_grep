@@ -13,6 +13,8 @@
 #include <stdio.h>
 #include <string.h>
 
+extern int errno;
+
 typedef struct {
   char b;
   char e;
@@ -38,7 +40,7 @@ enum position_codes { IS_BEGIN = 0, IS_MID = 1 };
 
 int file_exist(FILE *file);
 int parser(int argc, char **argv, int errcode, Options *Opt);
-void print_file(char *file_name, Options *Opt);
+int print_file(char *file_name, Options *Opt);
 void b_handler(FILE *file, const int *c, Options *Opt, unsigned int *num_str,
                const char *position);
 void n_handler(FILE *file, const int *c, Options *Opt, unsigned int *num_str);

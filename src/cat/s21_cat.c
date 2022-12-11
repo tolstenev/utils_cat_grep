@@ -14,7 +14,7 @@ int main(int argc, char **argv) {
   errcode = parser(argc, argv, errcode, &Opt);
 
   for (int i = 1; (i < argc) && (errcode == OK); ++i)
-    if (argv[i][0] != '-') print_file(argv[i], &Opt);
+    if (argv[i][0] != '-') errcode = print_file(argv[i], &Opt);
 
   return (errcode);
 }
@@ -49,7 +49,7 @@ int parser(int argc, char **argv, int errcode, Options *Opt) {
             } else if (strcmp(opt_phrase, "show-all") == 0) {
               Opt->v = Opt->t = Opt->e = opt_long = SET;
             } else {
-              printf("s21_cat: unrecognized option --%s\n", opt_phrase);
+							fprintf(stderr, "s21_cat: unrecognized option --%s\n", opt_phrase);
               puts("Try './s21_cat --help' for more information.");
               errcode = ERROR;
             }
@@ -82,7 +82,7 @@ int parser(int argc, char **argv, int errcode, Options *Opt) {
             Opt->v = Opt->t = Opt->e = SET;
             break;
           default:
-            printf("s21_cat: invalid option -- '%c'\n", argv[i][j]);
+						fprintf(stderr, "s21_cat: invalid option -- '%c'\n", argv[i][j]);
             puts("Try 's21_cat --help' for more information.");
             errcode = ERROR;
         }
@@ -92,13 +92,14 @@ int parser(int argc, char **argv, int errcode, Options *Opt) {
   return errcode;
 }
 
-void print_file(char *file_name, Options *Opt) {
-#TODO: проверить, посоветоваться мб стоит занулить здесь указатель на файл?
+int print_file(char *file_name, Options *Opt) {
   FILE *file;
+	int errcode = OK;
 
   if (NULL == (file = fopen(file_name, "r"))) {
-    printf("s21_cat: No such file or directory '%s'\n", file_name);
-  } else {
+		fprintf(stderr, "s21_cat: %s: %s\n", file_name, strerror(errno));
+		errcode = ERROR;
+	} else {
     int c = fgetc(file);
     unsigned int num_str = 0;
     char position = IS_BEGIN;
@@ -123,6 +124,7 @@ void print_file(char *file_name, Options *Opt) {
 
     fclose(file);
   }
+	return (errcode);
 }
 
 int file_exist(FILE *file) { return !(feof(file) || ferror(file)); }
