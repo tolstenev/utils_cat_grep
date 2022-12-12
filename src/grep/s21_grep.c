@@ -112,8 +112,13 @@ int o_handler(Options const *Opt, char *buf_str, const char *pattern) {
 		regfree(&preg);
 	} else if (OK == rc && !Opt->v) {
 		for (int i = 0; buf_str[i] != '\0'; ++i) {
-			if (regexec(&preg, s, 1, pmatch, 0) != Opt->v)
+			if (0 != regexec(&preg, s, 1, pmatch, 0)) {
+//				printf("s:'%s'\n", s);
+//				printf("pmatch[0].rm_eo:'%i'\n", (int)pmatch[0].rm_eo);
+//				printf("pmatch[0].rm_so:'%i'\n", (int)pmatch[0].rm_so);
 				break;
+			}
+			if (Opt->f) pmatch[0].rm_eo += 1;
 			printf("%.*s\n", (int)(pmatch[0].rm_eo - pmatch[0].rm_so),
 						 s + pmatch[0].rm_so);
 			s += pmatch[0].rm_eo;
