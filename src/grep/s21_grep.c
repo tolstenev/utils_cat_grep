@@ -71,17 +71,19 @@ int executor(const char **argv, const char *pattern, Options const *Opt) {
  * @param buf_str
  * @param Opt
  */
-int opt_handler(const char **argv, int ind_file_arg, int num_files,
-                 int num_str, char *buf_str, const char *pattern, Options const *Opt) {
+int opt_handler(const char *file_name, int num_files,
+                 int num_str, /*unsigned int num_matching_strings, */char *buf_str, const char *pattern, Options const *Opt) {
 	int errcode = OK;
 
-	if (Opt->c == 0) {
-    if (num_files > 1) printf("%s:", argv[ind_file_arg]);
+	if (!Opt->c) {
+//		c_h_handler(Opt, num_files, file_name, num_matching_strings);
+		if (num_files > 1 && !Opt->h) printf("%s:", file_name);
+		n_handler(Opt, num_str);
 
-    n_handler(Opt, num_str);
-
-		if (Opt->o && Opt->v == 0) errcode = o_handler(Opt, buf_str, pattern);
-		else fputs(buf_str, stdout);
+		if (Opt->o && Opt->v == 0)
+			errcode = o_handler(Opt, buf_str, pattern);
+		else
+			fputs(buf_str, stdout);
 
     int n = strlen(buf_str);
     if (buf_str[n] == '\0' && buf_str[n - 1] != '\n') putchar('\n');
@@ -113,9 +115,6 @@ int o_handler(Options const *Opt, char *buf_str, const char *pattern) {
 	} else if (OK == rc && !Opt->v) {
 		for (int i = 0; buf_str[i] != '\0'; ++i) {
 			if (0 != regexec(&preg, s, 1, pmatch, 0)) {
-//				printf("s:'%s'\n", s);
-//				printf("pmatch[0].rm_eo:'%i'\n", (int)pmatch[0].rm_eo);
-//				printf("pmatch[0].rm_so:'%i'\n", (int)pmatch[0].rm_so);
 				break;
 			}
 			if (Opt->f) pmatch[0].rm_eo += 1;
@@ -196,13 +195,14 @@ int file_handler(const char **argv, const char *pattern, int num_files,
 						if (Opt->l) {
 							opt_l_handling_is = SET;
 						} else {
-							errcode = opt_handler(argv, ind_file_arg, num_files, num_str, buf_str, pattern, Opt);
+							errcode = opt_handler(file_name, num_files, num_str, /*num_matching_strings,*/ buf_str, pattern, Opt);
 						}
 					}
 				}
 			}
 
       if (Opt->c) c_handler(Opt, num_files, file_name, num_matching_strings);
+//			c_h_handler(Opt, num_files, file_name, num_matching_strings);
       if (opt_l_handling_is == SET) printf("%s\n", file_name);
 
       regfree(&preg);
@@ -219,6 +219,24 @@ int file_handler(const char **argv, const char *pattern, int num_files,
  */
 void n_handler(Options const *Opt, int num_str) {
 	if (Opt->n) printf("%d:", num_str);
+}
+
+void c_h_handler(Options const *Opt, int num_files, const char *file_name,
+								 unsigned int num_matching_strings) {
+//  if (Opt->c && (num_files > 1) && !Opt->h)
+//    printf("%s:%d\n", file_name, num_matching_strings);
+//  else if (!Opt->c && (num_files > 1))
+//		printf("%s:", file_name);
+//	else
+//    printf("%d\n", num_matching_strings);
+
+
+
+	if ((num_files > 1) && !Opt->h)
+		printf("%s:%d\n", file_name, num_matching_strings);
+	else if (Opt->c && !Opt->h)
+		printf("%d\n", num_matching_strings);
+
 }
 
 void c_handler(Options const *Opt, int num_files, const char *file_name,
@@ -325,7 +343,7 @@ int init_struct(Options *Opt, int symbol, char *pattern) {
       break;
     case 'f':
       Opt->f = SET;
-      f_handler(pattern);
+      errcode = f_handler(pattern);
       break;
     case 's':
       Opt->s = SET;

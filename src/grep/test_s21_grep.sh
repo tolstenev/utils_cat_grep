@@ -12,9 +12,9 @@
 #PATTERN="pattern.file -e Your"
 #FILE="lyrics.txt"
 
-FLAGS="-e"
-PATTERN="rock -e back"
-FILE="lyrics.txt"
+FLAGS="-n"
+PATTERN="me"
+FILE="lyrics.txt pattern.file empty.file"
 
 TEST_CASE="grep $FLAGS $PATTERN $FILE"
 
