@@ -311,13 +311,57 @@ FILE="lyrics.txt"
 TEST_CASE="grep $FLAGS $PATTERN $FILE"
 run_test_case
 #-------------------------------------------------------------------
-
-
-
-
-
-
-
+TC_NAME="GIV1S"
+FLAGS="-iv"
+PATTERN="Your"
+FILE="lyrics.txt"
+TEST_CASE="grep $FLAGS $PATTERN $FILE"
+run_test_case
+#-------------------------------------------------------------------
+TC_NAME="GIC1S"
+FLAGS="-ic"
+PATTERN="Your"
+FILE="lyrics.txt"
+TEST_CASE="grep $FLAGS $PATTERN $FILE"
+run_test_case
+#-------------------------------------------------------------------
+TC_NAME="GIL1M"
+FLAGS="-il"
+PATTERN="Your"
+FILE="lyrics.txt lyrics2.txt"
+TEST_CASE="grep $FLAGS $PATTERN $FILE"
+run_test_case
+#-------------------------------------------------------------------
+TC_NAME="GIN1S"
+FLAGS="-in"
+PATTERN="Your"
+FILE="lyrics.txt"
+TEST_CASE="grep $FLAGS $PATTERN $FILE"
+run_test_case
+#-------------------------------------------------------------------
+TC_NAME="GIH1S"
+FLAGS="-ih"
+PATTERN="Your"
+FILE="lyrics.txt"
+TEST_CASE="grep $FLAGS $PATTERN $FILE"
+run_test_case
+#-------------------------------------------------------------------
+TC_NAME="GIF1S"
+rm pattern.file
+echo "Your" > pattern.file
+FLAGS="-if"
+PATTERN="pattern.file"
+FILE="lyrics.txt"
+TEST_CASE="grep $FLAGS $PATTERN $FILE"
+run_test_case
+#-------------------------------------------------------------------
+TC_NAME="GIO1S"
+FLAGS="-io"
+PATTERN="Your"
+FILE="lyrics.txt"
+TEST_CASE="grep $FLAGS $PATTERN $FILE"
+run_test_case
+#-------------------------------------------------------------------
 
 
 

@@ -50,7 +50,7 @@ check: $(NAME)
 		cppcheck --enable=all --suppress=missingIncludeSystem . $(HEADER) $(SRC)
 #------------------------------------------------------------------
 clean:
-		rm -rf $(OBJ) *.log *.file *.txt
+		rm -rf $(OBJ) *.log pattern.file empty.file lyrics.txt lyrics2.txt
 #------------------------------------------------------------------
 fclean: clean
 		rm -rf $(NAME)
