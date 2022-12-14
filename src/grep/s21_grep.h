@@ -18,8 +18,6 @@
 
 #define SIZE 1024
 
-extern int errno;
-
 typedef struct {
   char v;
   char i;

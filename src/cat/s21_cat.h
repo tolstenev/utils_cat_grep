@@ -13,8 +13,6 @@
 #include <stdio.h>
 #include <string.h>
 
-extern int errno;
-
 typedef struct {
   char b;
   char e;

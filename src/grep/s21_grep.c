@@ -115,7 +115,7 @@ int file_handler(const char **argv, const char *pattern, int num_files,
 
     if (NULL == (file_ptr = fopen(file_name, "r"))) {
       if (!Opt->s)
-        fprintf(stderr, "s21_grep: %s: %s\n", file_name, strerror(errno));
+        fprintf(stderr, "s21_grep: %s: %s\n", file_name, strerror(2));
     } else {
       char buf_str[SIZE] = {0};
       char opt_l_handling_is = CLEAR;
@@ -272,7 +272,7 @@ int f_handler(char *pattern) {
   const char *file_name_pattern = optarg;
 
   if (NULL == (file_pattern_pointer = fopen(file_name_pattern, "r"))) {
-    fprintf(stderr, "s21_grep: %s: %s\n", file_name_pattern, strerror(errno));
+    fprintf(stderr, "s21_grep: %s: %s\n", file_name_pattern, strerror(2));
     errcode = ERROR;
   } else {
     char buf_str_pattern[SIZE] = {0};

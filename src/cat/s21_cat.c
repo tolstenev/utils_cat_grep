@@ -132,7 +132,7 @@ int file_handler(char *file_name, Options *Opt) {
   int errcode = OK;
 
   if (NULL == (file_ptr = fopen(file_name, "r"))) {
-    fprintf(stderr, "s21_cat: %s: %s\n", file_name, strerror(errno));
+    fprintf(stderr, "s21_cat: %s: %s\n", file_name, strerror(2));
     errcode = ERROR;
   } else {
     int c = fgetc(file_ptr);
