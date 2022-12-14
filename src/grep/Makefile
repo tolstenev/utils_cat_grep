@@ -20,7 +20,7 @@ SRC						:= $(NAME).c
 #------------------------------------------------------------------
 OBJ						:= $(SRC:.c=.o)
 #------------------------------------------------------------------
-SINGLE_TEST_FILE		:= test_s21_grep.sh
+SINGLE_TEST_FILE		:= single_test_s21_grep.sh
 #------------------------------------------------------------------
 FUNCTIONAL_TEST_FILE	:= functional_test_s21_grep.sh
 #------------------------------------------------------------------
@@ -28,6 +28,17 @@ FUNCTIONAL_TEST_FILE	:= functional_test_s21_grep.sh
 .PHONY: all s21_grep test lint clean fclean re
 
 all: s21_grep
+
+#------------------------------------------------------------------
+info:
+		@echo "Available make targets:"
+		@echo "  s21_grep: create the executable file s21_grep"
+		@echo "  test:     run the functional test of the programm"
+		@echo "  stest:    run the single test of the programm"
+		@echo "  lint:     converts the code to the required style"
+		@echo "  clean:    remove generated files without the executable file s21_grep"
+		@echo "  fclean:   remove all generated files"
+		@echo "  re:       remove all generated files and recompile the programm"
 #------------------------------------------------------------------
 s21_grep: $(OBJ)
 		$(CC) $(CFLAGS) $(NAME).c -o $(UTILITY)
@@ -36,21 +47,16 @@ s21_grep: $(OBJ)
 		$(CC) $(CFLAGS) -c $< -o $@
 #------------------------------------------------------------------
 test: $(NAME)
-		bash ./$(SINGLE_TEST_FILE)
-#------------------------------------------------------------------
-func_test: $(NAME)
 		bash ./$(FUNCTIONAL_TEST_FILE)
 #------------------------------------------------------------------
+stest: $(NAME)
+		bash ./$(SINGLE_TEST_FILE)
+#------------------------------------------------------------------
 lint: $(NAME)
-		@echo -------------------CLANG-FORMAT-------------------
 		clang-format -i $(SRC) $(HEADER)
 #------------------------------------------------------------------
-check: $(NAME)
-		@echo ---------------------CPPCHECK---------------------
-		cppcheck --enable=all --suppress=missingIncludeSystem . $(HEADER) $(SRC)
-#------------------------------------------------------------------
 clean:
-		rm -rf $(OBJ) *.log pattern.file empty.file lyrics.txt lyrics2.txt
+		rm -rf $(OBJ) *.log pattern.file empty.file lyrics.txt lyrics2.txt logs/
 #------------------------------------------------------------------
 fclean: clean
 		rm -rf $(NAME)

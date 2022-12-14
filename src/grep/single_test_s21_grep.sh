@@ -7,14 +7,9 @@
 # yonnarge@student.21-school.ru
 #
 
-# Smoke test
-#FLAGS="-f"
-#PATTERN="pattern.file -e Your"
-#FILE="lyrics.txt"
-
 FLAGS="-n"
-PATTERN="me"
-FILE="lyrics.txt pattern.file empty.file"
+PATTERN="rock"
+FILE="lyrics.txt lyrics2.txt"
 
 TEST_CASE="grep $FLAGS $PATTERN $FILE"
 
@@ -44,3 +39,4 @@ if [ "$DIFF_RES" == "Files orig$FLAGS.log and s21_$FLAGS.log are identical" ]
 fi
 echo "--------------------------------------------------------------"
 
+rm *.log

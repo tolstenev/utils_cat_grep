@@ -11,10 +11,13 @@
 
 /**
  * @brief Инициализация возвращаемого кода ошибки, структуры опций, первичная
- * проверка входящих параметров
- * @param argc
- * @param argv
- * @return
+ * проверка входящих параметров, вызов функции-исполнителя
+ * @param argc - количество аргументов в командной строке
+ * @param argv - указатель на аргументы командной строки
+ * @return	0 -	Найдена одна или несколько соответствующих строк.
+ * 					1	- Соответствующие строки не
+ * найдены. 2	- Выявлены синтаксические ошибки или недоступные файлы (даже
+ * если были найдены соответствующие строки).
  */
 int main(int argc, char **argv) {
   int errcode = OK;
@@ -39,10 +42,14 @@ int main(int argc, char **argv) {
 
 /**
  * @brief Запускает выполнение всей работы программы
- * @param argv
- * @param pattern
- * @param Opt
- * @return
+ * @param argv - указатель на аргументы командной строки
+ * @param pattern - регулярное выражение по которому будет осуществляться поиск
+ * @param Opt - структура данных, хранящая информацию об опциях, с которыми была
+ * запущена программа
+ * @return	0 -	Найдена одна или несколько соответствующих строк.
+ * 					1	- Соответствующие строки не
+ * найдены. 2	- Выявлены синтаксические ошибки или недоступные файлы (даже
+ * если были найдены соответствующие строки).
  */
 int executor(const char **argv, const char *pattern, Options const *Opt) {
   int errcode = OK;
@@ -63,77 +70,11 @@ int executor(const char **argv, const char *pattern, Options const *Opt) {
 }
 
 /**
- * @brief Анализирует опции, с которыми была запущена программа
- * @param argv
- * @param ind_file_arg
- * @param num_files
- * @param num_str
- * @param buf_str
- * @param Opt
- */
-int opt_handler(const char *file_name, int num_files,
-                 int num_str, char *buf_str, const char *pattern, Options const *Opt) {
-	int errcode = OK;
-
-	if (!Opt->c) {
-		if (num_files > 1 && !Opt->h) printf("%s:", file_name);
-		n_handler(Opt, num_str);
-
-		if (Opt->o && !Opt->v)
-			errcode = o_handler(Opt, buf_str, pattern);
-		else
-			fputs(buf_str, stdout);
-
-		if (!Opt->o) {
-			int n = strlen(buf_str);
-			if (buf_str[n] == '\0' && buf_str[n - 1] != '\n') putchar('\n');
-		}
-  }
-	return (errcode);
-}
-
-/**
- * @brief Обрабатывает поведение программы при опции '-o'
- * @param Opt
- * @param buf_str
- * @param pattern
- * @return
- */
-int o_handler(Options const *Opt, char *buf_str, const char *pattern) {
-	int errcode = OK;
-	regex_t preg;
-	int regcode = ERROR;
-	char reg_errbuf[128] = {0};
-
-	if (OK != (regcode = Opt->i ? regcomp(&preg, pattern, REG_EXTENDED | REG_ICASE)
-										        	 : regcomp(&preg, pattern, REG_EXTENDED))) {
-		regerror(regcode, &preg, reg_errbuf, 128);
-		fprintf(stderr, "Compilation failed: '%s'\n", reg_errbuf);
-		errcode = ERROR;
-		regfree(&preg);
-	} else if (OK == regcode && !Opt->v) {
-		regmatch_t pmatch[SIZE];
-		char *s = buf_str;
-
-		for (int i = 0; buf_str[i] != '\0'; ++i) {
-			if (0 != regexec(&preg, s, 1, pmatch, 0)) {
-				break;
-			}
-			if (Opt->f) pmatch[0].rm_eo += 1;
-			printf("%.*s\n", (int)(pmatch[0].rm_eo - pmatch[0].rm_so),
-						 s + pmatch[0].rm_so);
-			s += pmatch[0].rm_eo;
-		}
-	}
-	regfree(&preg);
-	return (errcode);
-}
-
-/**
- * @brief Считает количество файлов, в которых будет проходить поиск.
- * @param argv
- * @param flag_no_pattern_opt
- * @return
+ * @brief Считает количество файлов, в которых будет проходить поиск
+ * @param argv - указатель на аргументы командной строки
+ * @param flag_no_pattern_opt - флаг, установливающийся в случае отсутствия
+ * опций '-e' и '-f'
+ * @return Количество файлов, в которых будет проходить поиск
  */
 int file_counter(const char **argv, int flag_no_pattern_opt) {
   int num_files = 0;
@@ -151,12 +92,17 @@ int file_counter(const char **argv, int flag_no_pattern_opt) {
 
 /**
  * @brief Обрабатывает файлы, в которых должен выполняться поиск
- * @param argv
- * @param pattern
- * @param num_files
- * @param flag_no_pattern_opt
- * @param Opt
- * @return
+ * @param argv - указатель на аргументы командной строки
+ * @param pattern - регулярное выражение по которому будет осуществляться поиск
+ * @param num_files - количество файлов, в которых будет проходить поиск
+ * @param flag_no_pattern_opt - флаг, установливающийся в случае отсутствия
+ * опций '-e' и '-f'
+ * @param Opt - структура данных, хранящая информацию об опциях, с которыми была
+ * запущена программа
+ * @return	0 -	Найдена одна или несколько соответствующих строк.
+ * 					1	- Соответствующие строки не
+ * найдены. 2	- Выявлены синтаксические ошибки или недоступные файлы (даже
+ * если были найдены соответствующие строки).
  */
 int file_handler(const char **argv, const char *pattern, int num_files,
                  int flag_no_pattern_opt, Options const *Opt) {
@@ -166,41 +112,44 @@ int file_handler(const char **argv, const char *pattern, int num_files,
     FILE *file_ptr;
     int ind_file_arg = optind + index_loop + flag_no_pattern_opt;
     const char *file_name = argv[ind_file_arg];
-    unsigned int num_matching_strings = 0;
 
     if (NULL == (file_ptr = fopen(file_name, "r"))) {
-			if (!Opt->s)
-      	fprintf(stderr, "s21_grep: %s: %s\n", file_name, strerror(errno));
-		} else {
+      if (!Opt->s)
+        fprintf(stderr, "s21_grep: %s: %s\n", file_name, strerror(errno));
+    } else {
       char buf_str[SIZE] = {0};
       char opt_l_handling_is = CLEAR;
       regex_t preg;
-			int rc = 0;
-			char reg_errbuf[128] = {0};
+      int regcode = 0;
+      unsigned int num_matching_strings = 0;
 
-      if (OK != (rc = (Opt->i ? regcomp(&preg, pattern, REG_EXTENDED | REG_ICASE)
+      if (OK !=
+          (regcode = (Opt->i ? regcomp(&preg, pattern, REG_EXTENDED | REG_ICASE)
                              : regcomp(&preg, pattern, REG_EXTENDED)))) {
-				regerror(rc, &preg, reg_errbuf, 128);
-				fprintf(stderr, "Compilation failed: '%s'\n", reg_errbuf);
-				errcode = ERROR;
-				regfree(&preg);
-			}
+        char reg_errbuf[128] = {0};
 
-			if (OK == errcode) {
-				for (int num_str = 1; NULL != fgets(buf_str, SIZE, file_ptr);
-						 ++num_str) {
-					if ((!Opt->v && (regexec(&preg, buf_str, 0, NULL, 0) == OK)) ||
-						(Opt->v && (regexec(&preg, buf_str, 0, NULL, 0) != OK))) {
-						if (Opt->c)
-							Opt->l ? num_matching_strings = 1 : ++num_matching_strings;
-						if (Opt->l) {
-							opt_l_handling_is = SET;
-						} else {
-							errcode = opt_handler(file_name, num_files, num_str, /*num_matching_strings,*/ buf_str, pattern, Opt);
-						}
-					}
-				}
-			}
+        regerror(regcode, &preg, reg_errbuf, 128);
+        fprintf(stderr, "Compilation failed: '%s'\n", reg_errbuf);
+        errcode = ERROR;
+        regfree(&preg);
+      }
+
+      if (OK == errcode) {
+        for (int num_str = 1; NULL != fgets(buf_str, SIZE, file_ptr);
+             ++num_str) {
+          if ((!Opt->v && (regexec(&preg, buf_str, 0, NULL, 0) == OK)) ||
+              (Opt->v && (regexec(&preg, buf_str, 0, NULL, 0) != OK))) {
+            if (Opt->c)
+              Opt->l ? num_matching_strings = 1 : ++num_matching_strings;
+            if (Opt->l) {
+              opt_l_handling_is = SET;
+            } else {
+              errcode = opt_handler(file_name, num_files, num_str, buf_str,
+                                    pattern, Opt);
+            }
+          }
+        }
+      }
 
       if (Opt->c) c_handler(Opt, num_files, file_name, num_matching_strings);
       if (opt_l_handling_is == SET) printf("%s\n", file_name);
@@ -213,27 +162,108 @@ int file_handler(const char **argv, const char *pattern, int num_files,
 }
 
 /**
- * @brief Обрабатывает поведение программы при опции '-n'
- * @param num_str
- * @param Opt
+ * @brief Анализирует опции, с которыми была запущена программа
+ * @param file_name - имя обрабатываемого в текущий момент файла
+ * @param num_files - количество файлов, в которых будет проходить поиск
+ * @param num_str - номер анализируемой строки файла
+ * @param buf_str - анализируемая строка файла
+ * @param pattern - регулярное выражение по которому будет осуществляться поиск
+ * @param Opt - структура данных, хранящая информацию об опциях, с которыми была
+ * запущена программа
+ * @return	0 -	Найдена одна или несколько соответствующих строк.
+ * 					1	- Соответствующие строки не
+ * найдены. 2	- Выявлены синтаксические ошибки или недоступные файлы (даже
+ * если были найдены соответствующие строки).
  */
-void n_handler(Options const *Opt, int num_str) {
-	if (Opt->n) printf("%d:", num_str);
+int opt_handler(const char *file_name, int num_files, int num_str,
+                char *buf_str, const char *pattern, Options const *Opt) {
+  int errcode = OK;
+
+  if (!Opt->c) {
+    if (num_files > 1 && !Opt->h) printf("%s:", file_name);
+    if (Opt->n) printf("%d:", num_str);
+
+    if (Opt->o && !Opt->v)
+      errcode = o_handler(Opt, buf_str, pattern);
+    else
+      fputs(buf_str, stdout);
+
+    if (!Opt->o) {
+      int n = strlen(buf_str);
+      if (buf_str[n] == '\0' && buf_str[n - 1] != '\n') putchar('\n');
+    }
+  }
+  return (errcode);
 }
 
+/**
+ * @brief Обрабатывает поведение программы при опции '-c'
+ * @param Opt - структура данных, хранящая информацию об опциях, с которыми была
+ * запущена программа
+ * @param num_files - количество файлов, в которых будет проходить поиск
+ * @param file_name - имя обрабатываемого в текущий момент файла
+ * @param num_matching_strings - количество строк, содержащих совпадения с
+ * искомым регулярным выражением
+ */
 void c_handler(Options const *Opt, int num_files, const char *file_name,
                unsigned int num_matching_strings) {
   if ((num_files > 1) && !Opt->h)
-    printf("%s:%d\n", file_name, num_matching_strings);
+    printf("%s:%u\n", file_name, num_matching_strings);
   else
-    printf("%d\n", num_matching_strings);
+    printf("%u\n", num_matching_strings);
+}
+
+/**
+ * @brief Обрабатывает поведение программы при опции '-o'
+ * @param Opt - структура данных, хранящая информацию об опциях, с которыми была
+ * запущена программа
+ * @param buf_str - анализируемая строка файла
+ * @param pattern - регулярное выражение по которому будет осуществляться поиск
+ * @return	0 -	Найдена одна или несколько соответствующих строк.
+ * 					1	- Соответствующие строки не
+ * найдены. 2	- Выявлены синтаксические ошибки или недоступные файлы (даже
+ * если были найдены соответствующие строки).
+ */
+int o_handler(Options const *Opt, char *buf_str, const char *pattern) {
+  int errcode = OK;
+  regex_t preg;
+  int regcode = ERROR;
+
+  if (OK != (regcode = Opt->i
+                           ? regcomp(&preg, pattern, REG_EXTENDED | REG_ICASE)
+                           : regcomp(&preg, pattern, REG_EXTENDED))) {
+    char reg_errbuf[128] = {0};
+
+    regerror(regcode, &preg, reg_errbuf, 128);
+    fprintf(stderr, "Compilation failed: '%s'\n", reg_errbuf);
+    errcode = ERROR;
+    regfree(&preg);
+  } else if (OK == regcode && !Opt->v) {
+    regmatch_t pmatch[SIZE];
+    char *s = buf_str;
+
+    for (int i = 0; buf_str[i] != '\0'; ++i) {
+      if (0 != regexec(&preg, s, 1, pmatch, 0)) {
+        break;
+      }
+      if (Opt->f) pmatch[0].rm_eo += 1;
+      printf("%.*s\n", (int)(pmatch[0].rm_eo - pmatch[0].rm_so),
+             s + pmatch[0].rm_so);
+      s += pmatch[0].rm_eo;
+    }
+  }
+  regfree(&preg);
+  return (errcode);
 }
 
 /**
  * @brief Обрабатывает файлы, содержащие паттерны при запуске программы
  * с опцией '-f'
- * @param pattern
- * @return
+ * @param pattern - регулярное выражение по которому будет осуществляться поиск
+ * @return	0 -	Найдена одна или несколько соответствующих строк.
+ * 					1	- Соответствующие строки не
+ * найдены. 2	- Выявлены синтаксические ошибки или недоступные файлы (даже
+ * если были найдены соответствующие строки).
  */
 int f_handler(char *pattern) {
   int errcode = OK;
@@ -241,9 +271,9 @@ int f_handler(char *pattern) {
   FILE *file_pattern_pointer;
   const char *file_name_pattern = optarg;
 
-  if ((file_pattern_pointer = fopen(file_name_pattern, "r")) == NULL) {
-		fprintf(stderr, "s21_grep: %s: %s\n", file_name_pattern, strerror(errno));
-    errcode = STOP;
+  if (NULL == (file_pattern_pointer = fopen(file_name_pattern, "r"))) {
+    fprintf(stderr, "s21_grep: %s: %s\n", file_name_pattern, strerror(errno));
+    errcode = ERROR;
   } else {
     char buf_str_pattern[SIZE] = {0};
 
@@ -266,8 +296,8 @@ int f_handler(char *pattern) {
 /**
  * @brief Заполняет шаблон паттерна, который будет использоваться для поиска в
  * регулярном выражении
- * @param pattern
- * @param src
+ * @param pattern - регулярное выражение по которому будет осуществляться поиск
+ * @param src - строка, которая после обработки будет записана в pattern
  */
 void init_pattern(char *pattern, const char *src) {
   // Если src не задан (пустой шаблон, то программа выведет
@@ -291,11 +321,15 @@ void init_pattern(char *pattern, const char *src) {
 }
 
 /**
- * @brief Инициализация структуры опций программы
- * @param Opt
- * @param symbol
- * @param pattern
- * @return errcode - код ошибки
+ * @brief Инициализация структуры опций, с которыми была запущена программа
+ * @param Opt - структура данных, хранящая информацию об опциях, с которыми была
+ * запущена программа
+ * @param symbol - анализируемый символ, который был получен с помощью getopt
+ * @param pattern - регулярное выражение по которому будет осуществляться поиск
+ * @return	0 -	Найдена одна или несколько соответствующих строк.
+ * 					1	- Соответствующие строки не
+ * найдены. 2	- Выявлены синтаксические ошибки или недоступные файлы (даже
+ * если были найдены соответствующие строки).
  */
 int init_struct(Options *Opt, int symbol, char *pattern) {
   int errcode = OK;

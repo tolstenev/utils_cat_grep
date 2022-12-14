@@ -7,19 +7,42 @@
 
 #include "s21_cat.h"
 
+/**
+ * @brief Запускает выполнение всей работы программы
+ * @param argc - количество аргументов в командной строке
+ * @param argv - указатель на аргументы командной строки
+ * @param pattern - регулярное выражение по которому будет осуществляться поиск
+ * @return	0 -	Корректное завершение работы.
+ * 					1	- Выявлены ошибки или
+ * недоступные файлы. 2	- Работа программы была остановлена для вывода
+ * информации по использованию.
+ */
 int main(int argc, char **argv) {
   int errcode = OK;
   Options Opt = {0, 0, 0, 0, 0, 0};
 
-  errcode = parser(argc, argv, errcode, &Opt);
+  errcode = parser(argc, argv, &Opt);
 
   for (int i = 1; (i < argc) && (errcode == OK); ++i)
-    if (argv[i][0] != '-') errcode = print_file(argv[i], &Opt);
+    if (argv[i][0] != '-') errcode = file_handler(argv[i], &Opt);
 
   return (errcode);
 }
 
-int parser(int argc, char **argv, int errcode, Options *Opt) {
+/**
+ * @brief Проводит синтаксический анализ аргументов командной строки и
+ * инициализацирует структуру опций, с которыми была запущена программа
+ * @param argc - количество аргументов в командной строке
+ * @param argv - указатель на аргументы командной строки
+ * @param Opt - структура данных, хранящая информацию об опциях, с которыми была
+ * запущена программа
+ * @return	0 -	Корректное завершение работы.
+ * 					1	- Выявлены ошибки или
+ * недоступные файлы. 2	- Работа программы была остановлена для вывода
+ * информации по использованию.
+ */
+int parser(int argc, char **argv, Options *Opt) {
+  int errcode = OK;
   int opt_long = CLEAR;
 
   for (int i = 1; i < argc; ++i) {
@@ -32,7 +55,7 @@ int parser(int argc, char **argv, int errcode, Options *Opt) {
         switch (argv[i][j]) {
           case '-':
             if (strcmp(opt_phrase, "help") == 0) {
-              print_file("USAGE.txt", Opt);
+              file_handler("USAGE_s21_cat.txt", Opt);
               errcode = STOP;
             } else if (strcmp(opt_phrase, "number") == 0) {
               Opt->n = opt_long = SET;
@@ -49,7 +72,8 @@ int parser(int argc, char **argv, int errcode, Options *Opt) {
             } else if (strcmp(opt_phrase, "show-all") == 0) {
               Opt->v = Opt->t = Opt->e = opt_long = SET;
             } else {
-							fprintf(stderr, "s21_cat: unrecognized option --%s\n", opt_phrase);
+              fprintf(stderr, "s21_cat: unrecognized option --%s\n",
+                      opt_phrase);
               puts("Try './s21_cat --help' for more information.");
               errcode = ERROR;
             }
@@ -82,113 +106,176 @@ int parser(int argc, char **argv, int errcode, Options *Opt) {
             Opt->v = Opt->t = Opt->e = SET;
             break;
           default:
-						fprintf(stderr, "s21_cat: invalid option -- '%c'\n", argv[i][j]);
+            fprintf(stderr, "s21_cat: invalid option -- '%c'\n", argv[i][j]);
             puts("Try 's21_cat --help' for more information.");
             errcode = ERROR;
         }
       }
     }
   }
-  return errcode;
+  return (errcode);
 }
 
-int print_file(char *file_name, Options *Opt) {
-  FILE *file;
-	int errcode = OK;
+/**
+ * @brief Основная функция, которая обрабатывает файлы в соответствии с
+ * указанными опциями
+ * @param file_name - имя обрабатываемого в текущий момент файла
+ * @param Opt - структура данных, хранящая информацию об опциях, с которыми была
+ * запущена программа
+ * @return	0 -	Корректное завершение работы.
+ * 					1	- Выявлены ошибки или
+ * недоступные файлы. 2	- Работа программы была остановлена для вывода
+ * информации по использованию.
+ */
+int file_handler(char *file_name, Options *Opt) {
+  FILE *file_ptr;
+  int errcode = OK;
 
-  if (NULL == (file = fopen(file_name, "r"))) {
-		fprintf(stderr, "s21_cat: %s: %s\n", file_name, strerror(errno));
-		errcode = ERROR;
-	} else {
-    int c = fgetc(file);
+  if (NULL == (file_ptr = fopen(file_name, "r"))) {
+    fprintf(stderr, "s21_cat: %s: %s\n", file_name, strerror(errno));
+    errcode = ERROR;
+  } else {
+    int c = fgetc(file_ptr);
     unsigned int num_str = 0;
-    char position = IS_BEGIN;
+    char flag_position = IS_BEGIN;
 
-    b_handler(file, &c, Opt, &num_str, &position);
-    n_handler(file, &c, Opt, &num_str);
-    s_handler(file, &c, Opt, &num_str, &position);
+    b_handler(file_ptr, &c, Opt, &num_str, &flag_position);
+    n_handler(file_ptr, &c, Opt, &num_str);
+    s_handler(file_ptr, &c, Opt, &num_str, &flag_position);
 
-    position = IS_MID;
+    flag_position = IS_MID;
     do {
       v_handler(&c, Opt);
       t_handler(&c, Opt);
-      s_handler(file, &c, Opt, &num_str, &position);
+      s_handler(file_ptr, &c, Opt, &num_str, &flag_position);
       e_handler(&c, Opt);
 
       putchar(c);
 
-      b_handler(file, &c, Opt, &num_str, &position);
-      n_handler(file, &c, Opt, &num_str);
-      c = fgetc(file);
-    } while (file_exist(file));
+      b_handler(file_ptr, &c, Opt, &num_str, &flag_position);
+      n_handler(file_ptr, &c, Opt, &num_str);
+      c = fgetc(file_ptr);
+    } while (file_exist(file_ptr));
 
-    fclose(file);
+    fclose(file_ptr);
   }
-	return (errcode);
+  return (errcode);
 }
 
-int file_exist(FILE *file) { return !(feof(file) || ferror(file)); }
+/**
+ * @brief Проверяет доступность файла для обработки (существование и отсутствие
+ * ошибок)
+ * @param file_ptr - указатель на обрабатываемый в текущий момент файл
+ * @return	0 -	Корректное завершение работы.
+ * 					1	- Выявлены ошибки или
+ * недоступные файлы. 2	- Работа программы была остановлена для вывода
+ * информации по использованию.
+ */
+int file_exist(FILE *file_ptr) { return !(feof(file_ptr) || ferror(file_ptr)); }
 
-void b_handler(FILE *file, const int *c, Options *Opt, unsigned int *num_str,
-               const char *position) {
+/**
+ * @brief Обрабатывает поведение программы при опции '-b'
+ * @param file_ptr - указатель на обрабатываемый в текущий момент файл
+ * @param c - обрабатываемый символ
+ * @param Opt - структура данных, хранящая информацию об опциях, с которыми была
+ * запущена программа
+ * @param num_str - номер анализируемой строки файла
+ * @param flag_position - флаг для предобратки в начале файла
+ */
+void b_handler(FILE *file_ptr, const int *c, Options *Opt,
+               unsigned int *num_str, const char *flag_position) {
   if (Opt->b) {
     Opt->n = 0;
-    int fut_c = fgetc(file);
-    if (file_exist(file)) {
-      if ((*c == '\n' && fut_c != '\n' && *position == IS_MID) ||
-          (*c != '\n' && *position == IS_BEGIN)) {
+    int fut_c = fgetc(file_ptr);
+    if (file_exist(file_ptr)) {
+      if ((*c == '\n' && fut_c != '\n' && *flag_position == IS_MID) ||
+          (*c != '\n' && *flag_position == IS_BEGIN)) {
         printf("%6u\t", ++(*num_str));
       }
-      fseek(file, -1, SEEK_CUR);
+      fseek(file_ptr, -1, SEEK_CUR);
     }
   }
 }
 
-void n_handler(FILE *file, const int *c, Options *Opt, unsigned int *num_str) {
+/**
+ * @brief Обрабатывает поведение программы при опции '-n'
+ * @param file_ptr - указатель на обрабатываемый в текущий момент файл
+ * @param c - обрабатываемый символ
+ * @param Opt - структура данных, хранящая информацию об опциях, с которыми была
+ * запущена программа
+ * @param num_str - номер анализируемой строки файла
+ */
+void n_handler(FILE *file_ptr, const int *c, Options *Opt,
+               unsigned int *num_str) {
   if (Opt->n) {
-    fgetc(file);
-    if (file_exist(file)) {
+    fgetc(file_ptr);
+    if (file_exist(file_ptr)) {
       if (*c == '\n' || *num_str == 0) {
         printf("%6u\t", ++(*num_str));
       }
-      fseek(file, -1, SEEK_CUR);
+      fseek(file_ptr, -1, SEEK_CUR);
     }
   }
 }
 
-void s_opt_handler(FILE *file, int *fut_c, int *c, Options *Opt,
-                   unsigned int *num_str, const char *position) {
+/**
+ * @brief Обрабатывает поведение опции '-s'
+ * @param file_pfile_ptr - указатель на обрабатываемый в текущий момент файлtr
+ * @param fut_c - указатель на следующий за обрабатываемым символ
+ * @param c - обрабатываемый символ
+ * @param Opt - структура данных, хранящая информацию об опциях, с которыми была
+ * запущена программа
+ * @param num_str - номер анализируемой строки файла
+ * @param flag_position - флаг для предобратки в начале файла
+ */
+void s_opt_handler(FILE *file_ptr, int *fut_c, int *c, Options *Opt,
+                   unsigned int *num_str, const char *flag_position) {
   if (*fut_c == '\n') {
     if (Opt->e) printf("$");
-    while (*fut_c == '\n') *fut_c = fgetc(file);
+    while (*fut_c == '\n') *fut_c = fgetc(file_ptr);
     putchar('\n');
-    if (*position == IS_BEGIN) *c = *fut_c;
-    if (Opt->n || (Opt->b && *position == IS_BEGIN)) {
+    if (*flag_position == IS_BEGIN) *c = *fut_c;
+    if (Opt->n || (Opt->b && *flag_position == IS_BEGIN)) {
       printf("%6u\t", ++(*num_str));
     }
   }
 }
 
-void s_handler(FILE *file, int *c, Options *Opt, unsigned int *num_str,
-               char *position) {
+/**
+ * @brief Обрабатывает поведение программы при опции '-s'
+ * @param file_ptr - указатель на обрабатываемый в текущий момент файл
+ * @param c - обрабатываемый символ
+ * @param Opt - структура данных, хранящая информацию об опциях, с которыми была
+ * запущена программа
+ * @param num_str - номер анализируемой строки файла
+ * @param flag_position - флаг для предобратки в начале файла
+ */
+void s_handler(FILE *file_ptr, int *c, Options *Opt, unsigned int *num_str,
+               char *flag_position) {
   if (Opt->s) {
-    int fut_c = fgetc(file);
-    if (*position == IS_BEGIN) {
+    int fut_c = fgetc(file_ptr);
+    if (*flag_position == IS_BEGIN) {
       if (*c != '\n') {
-        fseek(file, -1, SEEK_CUR);
+        fseek(file_ptr, -1, SEEK_CUR);
       }
-      s_opt_handler(file, &fut_c, c, Opt, num_str, position);
-    } else if (*position == IS_MID) {
+      s_opt_handler(file_ptr, &fut_c, c, Opt, num_str, flag_position);
+    } else if (*flag_position == IS_MID) {
       if (*c == '\n') {
-        s_opt_handler(file, &fut_c, c, Opt, num_str, position);
+        s_opt_handler(file_ptr, &fut_c, c, Opt, num_str, flag_position);
       }
-      if (file_exist(file)) {
-        fseek(file, -1, SEEK_CUR);
+      if (file_exist(file_ptr)) {
+        fseek(file_ptr, -1, SEEK_CUR);
       }
     }
   }
 }
 
+/**
+ * @brief Обрабатывает поведение программы при опции '-v'
+ * @param c - обрабатываемый символ
+ * @param Opt - структура данных, хранящая информацию об опциях, с которыми была
+ * запущена программа
+ */
 void v_handler(int *c, Options *Opt) {
   if (Opt->v) {
     if ((0 <= *c && *c <= 8) || (11 <= *c && *c <= 31)) {
@@ -202,6 +289,12 @@ void v_handler(int *c, Options *Opt) {
   }
 }
 
+/**
+ * @brief Обрабатывает поведение программы при опции '-t'
+ * @param c - обрабатываемый символ
+ * @param Opt - структура данных, хранящая информацию об опциях, с которыми была
+ * запущена программа
+ */
 void t_handler(int *c, Options *Opt) {
   if (Opt->t && *c == '\t') {
     putchar('^');
@@ -210,6 +303,12 @@ void t_handler(int *c, Options *Opt) {
   v_handler(c, Opt);
 }
 
+/**
+ * @brief Обрабатывает поведение программы при опции '-e'
+ * @param c - обрабатываемый символ
+ * @param Opt - структура данных, хранящая информацию об опциях, с которыми была
+ * запущена программа
+ */
 void e_handler(int *c, Options *Opt) {
   if (Opt->e && (*c == '\n')) printf("$");
   v_handler(c, Opt);

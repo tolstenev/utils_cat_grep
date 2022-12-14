@@ -1,1 +1,0 @@
-Usage: ./s21_grep

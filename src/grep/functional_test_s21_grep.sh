@@ -23,6 +23,7 @@ PATTERN=""
 FILE=""
 TEST_CASE="grep $FLAGS $PATTERN $FILE"
 
+touch main_report.log
 touch pattern.file
 touch empty.file
 
@@ -88,14 +89,35 @@ function run_utils() {
 function compare_results() {
   DIF_RES="$(diff -s orig_$TC_NAME.log s21_$TC_NAME.log)"
 
-
   if [ "$DIF_RES" == "Files orig_$TC_NAME.log and s21_$TC_NAME.log are identical" ]
     then
       echo -e "Test:$TC_NAME: \033[32m✅  Passed\033[0m"
       (( COUNTER_SUCCESS++ ))
+
+      echo "" >> main_report.log
+      echo "┌──────────────────────────────────────────────────────────────────" >> main_report.log
+      echo "│ Test:$TC_NAME:	✅  Passed" >> main_report.log
+      echo "└──────────────────────────────────────────────────────────────────" >> main_report.log
+      echo "orig: $TEST_CASE" >> main_report.log
+      $TEST_CASE >> main_report.log
+      echo "-------------------------------------------------------------------" >> main_report.log
+      echo "s21_: ./s21_$TEST_CASE" >> main_report.log
+      ./s21_$TEST_CASE >> main_report.log
+      echo "-------------------------------------------------------------------" >> main_report.log
     else
       echo -e "Test:$TC_NAME: \033[31m❌  Failed\033[0m"
       (( COUNTER_FAIL++ ))
+
+      echo "" >> main_report.log
+      echo "┌──────────────────────────────────────────────────────────────────" >> main_report.log
+      echo "│ Test:$TC_NAME:	❌  Failed" >> main_report.log
+      echo "└──────────────────────────────────────────────────────────────────" >> main_report.log
+      echo "orig: $TEST_CASE" >> main_report.log
+      $TEST_CASE >> main_report.log
+      echo "-------------------------------------------------------------------" >> main_report.log
+      echo "s21_: ./s21_$TEST_CASE" >> main_report.log
+      ./s21_$TEST_CASE >> main_report.log
+      echo "-------------------------------------------------------------------" >> main_report.log
   fi
 }
 
@@ -108,6 +130,10 @@ function run_test_case() {
 rm *.log
 clear
 
+echo "-------------------------------------------------------------------" >> main_report.log
+echo "---------------REPORT-OF-FUNCTIONAL-TEST-S21_GREP------------------" >> main_report.log
+echo "-------------------------------------------------------------------" >> main_report.log
+
 echo "-------------------------------------------------------------------"
 echo "--------------------FUNCTIONAL-TEST-S21_GREP-----------------------"
 echo "-------------------------------------------------------------------"
@@ -116,6 +142,7 @@ echo "----------------------BUILDING-THE-PROJECT-------------------------"
 make
 
 echo "-------------------------------------------------------------------"
+
 #-------------------------------------------------------------------
 TC_NAME="GE1S"
 FLAGS="-e"
@@ -362,23 +389,187 @@ FILE="lyrics.txt"
 TEST_CASE="grep $FLAGS $PATTERN $FILE"
 run_test_case
 #-------------------------------------------------------------------
+TC_NAME="GVC1S"
+FLAGS="-vc"
+PATTERN="me"
+FILE="lyrics.txt"
+TEST_CASE="grep $FLAGS $PATTERN $FILE"
+run_test_case
+#-------------------------------------------------------------------
+TC_NAME="GVL1M"
+FLAGS="-vl"
+PATTERN="rock"
+FILE="lyrics.txt lyrics2.txt"
+TEST_CASE="grep $FLAGS $PATTERN $FILE"
+run_test_case
+#-------------------------------------------------------------------
+TC_NAME="GVN1S"
+FLAGS="-vn"
+PATTERN="rock"
+FILE="lyrics.txt"
+TEST_CASE="grep $FLAGS $PATTERN $FILE"
+run_test_case
+#-------------------------------------------------------------------
+TC_NAME="GVH1M"
+FLAGS="-vh"
+PATTERN="rock"
+FILE="lyrics.txt lyrics2.txt"
+TEST_CASE="grep $FLAGS $PATTERN $FILE"
+run_test_case
+#-------------------------------------------------------------------
+TC_NAME="GVF1M"
+rm pattern.file
+echo "rock\nback" > pattern.file
+FLAGS="-vf"
+PATTERN="pattern.file"
+FILE="lyrics.txt lyrics2.txt"
+TEST_CASE="grep $FLAGS $PATTERN $FILE"
+run_test_case
+#-------------------------------------------------------------------
+TC_NAME="GVO1S"
+FLAGS="-vo"
+PATTERN="me"
+FILE="lyrics.txt"
+TEST_CASE="grep $FLAGS $PATTERN $FILE"
+run_test_case
+#-------------------------------------------------------------------
+TC_NAME="GCL1M"
+FLAGS="-cl"
+PATTERN="rock"
+FILE="lyrics.txt lyrics2.txt"
+TEST_CASE="grep $FLAGS $PATTERN $FILE"
+run_test_case
+#-------------------------------------------------------------------
+TC_NAME="GCN1M"
+FLAGS="-cn"
+PATTERN="rock"
+FILE="lyrics.txt lyrics2.txt"
+TEST_CASE="grep $FLAGS $PATTERN $FILE"
+run_test_case
+#-------------------------------------------------------------------
+TC_NAME="GCH1M"
+FLAGS="-ch"
+PATTERN="rock"
+FILE="lyrics.txt lyrics2.txt"
+TEST_CASE="grep $FLAGS $PATTERN $FILE"
+run_test_case
+#-------------------------------------------------------------------
+TC_NAME="GCF1M"
+rm pattern.file
+echo "rock" > pattern.file
+FLAGS="-vf"
+PATTERN="pattern.file"
+FILE="lyrics.txt lyrics2.txt empty.file"
+TEST_CASE="grep $FLAGS $PATTERN $FILE"
+run_test_case
+#-------------------------------------------------------------------
+TC_NAME="GCO1M"
+FLAGS="-co"
+PATTERN="me"
+FILE="lyrics.txt lyrics2.txt empty.file"
+TEST_CASE="grep $FLAGS $PATTERN $FILE"
+run_test_case
+#-------------------------------------------------------------------
+TC_NAME="GLN1M"
+FLAGS="-ln"
+PATTERN="me"
+FILE="lyrics.txt lyrics2.txt empty.file"
+TEST_CASE="grep $FLAGS $PATTERN $FILE"
+run_test_case
+#-------------------------------------------------------------------
+TC_NAME="GLh1M"
+FLAGS="-lh"
+PATTERN="me"
+FILE="lyrics.txt lyrics2.txt empty.file"
+TEST_CASE="grep $FLAGS $PATTERN $FILE"
+run_test_case
+#-------------------------------------------------------------------
+TC_NAME="GLF1M"
+rm pattern.file
+echo "rock" > pattern.file
+FLAGS="-lf"
+PATTERN="pattern.file"
+FILE="lyrics.txt empty.file"
+TEST_CASE="grep $FLAGS $PATTERN $FILE"
+run_test_case
+#-------------------------------------------------------------------
+TC_NAME="GLO1M"
+FLAGS="-lo"
+PATTERN="me"
+FILE="lyrics.txt lyrics2.txt empty.file"
+TEST_CASE="grep $FLAGS $PATTERN $FILE"
+run_test_case
+#-------------------------------------------------------------------
+TC_NAME="GNH1M"
+FLAGS="-nh"
+PATTERN="rock"
+FILE="lyrics.txt lyrics2.txt"
+TEST_CASE="grep $FLAGS $PATTERN $FILE"
+run_test_case
+#-------------------------------------------------------------------
+TC_NAME="GNF1M"
+rm pattern.file
+echo "rock" > pattern.file
+FLAGS="-nf"
+PATTERN="pattern.file"
+FILE="lyrics.txt empty.file"
+TEST_CASE="grep $FLAGS $PATTERN $FILE"
+run_test_case
+#-------------------------------------------------------------------
+TC_NAME="GNO1M"
+FLAGS="-no"
+PATTERN="pattern.file"
+FILE="lyrics.txt empty.file"
+TEST_CASE="grep $FLAGS $PATTERN $FILE"
+run_test_case
+#-------------------------------------------------------------------
+TC_NAME="GHF1M"
+rm pattern.file
+echo "rock" > pattern.file
+FLAGS="-hf"
+PATTERN="pattern.file"
+FILE="lyrics.txt empty.file"
+TEST_CASE="grep $FLAGS $PATTERN $FILE"
+run_test_case
+#-------------------------------------------------------------------
+TC_NAME="GHO1M"
+FLAGS="-ho"
+PATTERN="me"
+FILE="lyrics.txt lyrics2.txt empty.file"
+TEST_CASE="grep $FLAGS $PATTERN $FILE"
+run_test_case
+#-------------------------------------------------------------------
+TC_NAME="GHF1M"
+rm pattern.file
+echo "you\nme" > pattern.file
+FLAGS="-of"
+PATTERN="pattern.file"
+FILE="lyrics.txt empty.file"
+TEST_CASE="grep $FLAGS $PATTERN $FILE"
+run_test_case
+#-------------------------------------------------------------------
 
 
+echo "---------------------------SUMMARY---------------------------------"
+echo "SUCCESS: $COUNTER_SUCCESS"
+echo "FAIL: $COUNTER_FAIL"
+echo "-------------------------------------------------------------------"
 
 
-
-
+echo "" >> main_report.log
+echo "---------------------------SUMMARY---------------------------------" >> main_report.log
+echo "SUCCESS: $COUNTER_SUCCESS" >> main_report.log
+echo "FAIL: $COUNTER_FAIL" >> main_report.log
+echo "-------------------------------------------------------------------" >> main_report.log
 
 if [ -d logs ]; then
   rm -rf ./logs/
-else
+fi
+
+if ! [ -d logs ]; then
   mkdir ./logs/
 fi
 
 mv ./*.log ./logs/
 
-echo "-------------------------------------------------------------------"
-echo "SUCCESS: $COUNTER_SUCCESS"
-echo "FAIL: $COUNTER_FAIL"
-echo "-------------------------------------------------------------------"
-
+rm *.file lyrics.txt lyrics2.txt
