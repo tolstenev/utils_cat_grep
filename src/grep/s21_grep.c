@@ -72,21 +72,22 @@ int executor(const char **argv, const char *pattern, Options const *Opt) {
  * @param Opt
  */
 int opt_handler(const char *file_name, int num_files,
-                 int num_str, /*unsigned int num_matching_strings, */char *buf_str, const char *pattern, Options const *Opt) {
+                 int num_str, char *buf_str, const char *pattern, Options const *Opt) {
 	int errcode = OK;
 
 	if (!Opt->c) {
-//		c_h_handler(Opt, num_files, file_name, num_matching_strings);
 		if (num_files > 1 && !Opt->h) printf("%s:", file_name);
 		n_handler(Opt, num_str);
 
-		if (Opt->o && Opt->v == 0)
+		if (Opt->o && !Opt->v)
 			errcode = o_handler(Opt, buf_str, pattern);
 		else
 			fputs(buf_str, stdout);
 
-    int n = strlen(buf_str);
-    if (buf_str[n] == '\0' && buf_str[n - 1] != '\n') putchar('\n');
+		if (!Opt->o) {
+			int n = strlen(buf_str);
+			if (buf_str[n] == '\0' && buf_str[n - 1] != '\n') putchar('\n');
+		}
   }
 	return (errcode);
 }
@@ -101,18 +102,19 @@ int opt_handler(const char *file_name, int num_files,
 int o_handler(Options const *Opt, char *buf_str, const char *pattern) {
 	int errcode = OK;
 	regex_t preg;
-	regmatch_t pmatch[SIZE];
-	int rc = 1;
+	int regcode = ERROR;
 	char reg_errbuf[128] = {0};
-	char *s = buf_str;
 
-	if (OK != (rc = Opt->i ? regcomp(&preg, pattern, REG_EXTENDED | REG_ICASE)
-													: regcomp(&preg, pattern, REG_EXTENDED))) {
-		regerror(rc, &preg, reg_errbuf, 128);
+	if (OK != (regcode = Opt->i ? regcomp(&preg, pattern, REG_EXTENDED | REG_ICASE)
+										        	 : regcomp(&preg, pattern, REG_EXTENDED))) {
+		regerror(regcode, &preg, reg_errbuf, 128);
 		fprintf(stderr, "Compilation failed: '%s'\n", reg_errbuf);
 		errcode = ERROR;
 		regfree(&preg);
-	} else if (OK == rc && !Opt->v) {
+	} else if (OK == regcode && !Opt->v) {
+		regmatch_t pmatch[SIZE];
+		char *s = buf_str;
+
 		for (int i = 0; buf_str[i] != '\0'; ++i) {
 			if (0 != regexec(&preg, s, 1, pmatch, 0)) {
 				break;
@@ -169,8 +171,7 @@ int file_handler(const char **argv, const char *pattern, int num_files,
     if (NULL == (file_ptr = fopen(file_name, "r"))) {
 			if (!Opt->s)
       	fprintf(stderr, "s21_grep: %s: %s\n", file_name, strerror(errno));
-      errcode = STOP;
-    } else {
+		} else {
       char buf_str[SIZE] = {0};
       char opt_l_handling_is = CLEAR;
       regex_t preg;
@@ -202,7 +203,6 @@ int file_handler(const char **argv, const char *pattern, int num_files,
 			}
 
       if (Opt->c) c_handler(Opt, num_files, file_name, num_matching_strings);
-//			c_h_handler(Opt, num_files, file_name, num_matching_strings);
       if (opt_l_handling_is == SET) printf("%s\n", file_name);
 
       regfree(&preg);
@@ -221,24 +221,6 @@ void n_handler(Options const *Opt, int num_str) {
 	if (Opt->n) printf("%d:", num_str);
 }
 
-void c_h_handler(Options const *Opt, int num_files, const char *file_name,
-								 unsigned int num_matching_strings) {
-//  if (Opt->c && (num_files > 1) && !Opt->h)
-//    printf("%s:%d\n", file_name, num_matching_strings);
-//  else if (!Opt->c && (num_files > 1))
-//		printf("%s:", file_name);
-//	else
-//    printf("%d\n", num_matching_strings);
-
-
-
-	if ((num_files > 1) && !Opt->h)
-		printf("%s:%d\n", file_name, num_matching_strings);
-	else if (Opt->c && !Opt->h)
-		printf("%d\n", num_matching_strings);
-
-}
-
 void c_handler(Options const *Opt, int num_files, const char *file_name,
                unsigned int num_matching_strings) {
   if ((num_files > 1) && !Opt->h)
@@ -248,8 +230,8 @@ void c_handler(Options const *Opt, int num_files, const char *file_name,
 }
 
 /**
- * @brief Обрабатывает файлы, содержащие паттерны при запуске программы с опцией
- * '-f'
+ * @brief Обрабатывает файлы, содержащие паттерны при запуске программы
+ * с опцией '-f'
  * @param pattern
  * @return
  */
