@@ -1,8 +1,20 @@
 #
-# Copyright (с) 2022 Student of School 21:
-# Yonn Argelia
-#
+# Copyright 2023 Gleb Tolstenev
 # yonnarge@student.21-school.ru
+#
+# Makefile for s21_grep utility
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 #
 
 #-------------------------------------------------------------------
@@ -47,10 +59,10 @@ s21_grep: $(OBJ)
 		$(CC) $(CFLAGS) -c $< -o $@
 #------------------------------------------------------------------
 test: $(NAME)
-		bash ./$(FUNCTIONAL_TEST_FILE)
+		sh ./$(FUNCTIONAL_TEST_FILE)
 #------------------------------------------------------------------
-stest: $(NAME)
-		bash ./$(SINGLE_TEST_FILE)
+st: $(NAME)
+		sh ./$(SINGLE_TEST_FILE)
 #------------------------------------------------------------------
 lint: $(NAME)
 		clang-format -i $(SRC) $(HEADER)

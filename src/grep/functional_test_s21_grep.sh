@@ -1,18 +1,30 @@
 #!/bin/bash
 
 #
-# Copyright (с) 2022 Student of School 21:
-# Yonn Argelia
-#
+# Copyright 2023 Gleb Tolstenev
 # yonnarge@student.21-school.ru
+#
+# functional_test_s21_grep.sh is the file for testing s21_grep utility
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 #
 
 # Test case naming:
 #GS1E
 #G - grep
-#S - single file / M - multiple files
-#1 - number test case
 #E - flag / IV - multiple flags
+#1 - number test case
+#S - single file / M - multiple files
 
 COUNTER_SUCCESS=0
 COUNTER_FAIL=0
@@ -21,11 +33,7 @@ TC_NAME=""
 FLAGS=""
 PATTERN=""
 FILE=""
-TEST_CASE="grep $FLAGS $PATTERN $FILE"
-
-touch main_report.log
-touch pattern.file
-touch empty.file
+TEST_CASE=""
 
 echo "Somebody once told me the world is gonna roll me
 I ain't the sharpest tool in the shed
@@ -91,33 +99,33 @@ function compare_results() {
 
   if [ "$DIF_RES" == "Files orig_$TC_NAME.log and s21_$TC_NAME.log are identical" ]
     then
-      echo -e "Test:$TC_NAME: \033[32m✅  Passed\033[0m"
+      echo "Test:$TC_NAME: \033[32m✅  Passed\033[0m"
       (( COUNTER_SUCCESS++ ))
 
-      echo "" >> main_report.log
-      echo "┌──────────────────────────────────────────────────────────────────" >> main_report.log
-      echo "│ Test:$TC_NAME:	✅  Passed" >> main_report.log
-      echo "└──────────────────────────────────────────────────────────────────" >> main_report.log
-      echo "orig: $TEST_CASE" >> main_report.log
-      $TEST_CASE >> main_report.log
-      echo "-------------------------------------------------------------------" >> main_report.log
-      echo "s21_: ./s21_$TEST_CASE" >> main_report.log
-      ./s21_$TEST_CASE >> main_report.log
-      echo "-------------------------------------------------------------------" >> main_report.log
+      echo "" >> main_grep_report.log
+      echo "┌──────────────────────────────────────────────────────────────────" >> main_grep_report.log
+      echo "│ Test:$TC_NAME:	✅  Passed" >> main_grep_report.log
+      echo "└──────────────────────────────────────────────────────────────────" >> main_grep_report.log
+      echo "orig: $TEST_CASE" >> main_grep_report.log
+      $TEST_CASE >> main_grep_report.log
+      echo "-------------------------------------------------------------------" >> main_grep_report.log
+      echo "s21_: ./s21_$TEST_CASE" >> main_grep_report.log
+      ./s21_$TEST_CASE >> main_grep_report.log
+      echo "-------------------------------------------------------------------" >> main_grep_report.log
     else
-      echo -e "Test:$TC_NAME: \033[31m❌  Failed\033[0m"
+      echo "Test:$TC_NAME: \033[31m❌  Failed\033[0m"
       (( COUNTER_FAIL++ ))
 
-      echo "" >> main_report.log
-      echo "┌──────────────────────────────────────────────────────────────────" >> main_report.log
-      echo "│ Test:$TC_NAME:	❌  Failed" >> main_report.log
-      echo "└──────────────────────────────────────────────────────────────────" >> main_report.log
-      echo "orig: $TEST_CASE" >> main_report.log
-      $TEST_CASE >> main_report.log
-      echo "-------------------------------------------------------------------" >> main_report.log
-      echo "s21_: ./s21_$TEST_CASE" >> main_report.log
-      ./s21_$TEST_CASE >> main_report.log
-      echo "-------------------------------------------------------------------" >> main_report.log
+      echo "" >> main_grep_report.log
+      echo "┌──────────────────────────────────────────────────────────────────" >> main_grep_report.log
+      echo "│ Test:$TC_NAME:	❌  Failed" >> main_grep_report.log
+      echo "└──────────────────────────────────────────────────────────────────" >> main_grep_report.log
+      echo "orig: $TEST_CASE" >> main_grep_report.log
+      $TEST_CASE >> main_grep_report.log
+      echo "-------------------------------------------------------------------" >> main_grep_report.log
+      echo "s21_: ./s21_$TEST_CASE" >> main_grep_report.log
+      ./s21_$TEST_CASE >> main_grep_report.log
+      echo "-------------------------------------------------------------------" >> main_grep_report.log
   fi
 }
 
@@ -128,16 +136,19 @@ function run_test_case() {
 }
 
 rm *.log
+touch main_grep_report.log
+touch pattern.file
+touch empty.file
 clear
 
-echo "-------------------------------------------------------------------" >> main_report.log
-echo "---------------REPORT-OF-FUNCTIONAL-TEST-S21_GREP------------------" >> main_report.log
-echo "-------------------------------------------------------------------" >> main_report.log
+echo "-------------------------------------------------------------------" >> main_grep_report.log
+echo "---------------REPORT-OF-FUNCTIONAL-TEST-S21_GREP------------------" >> main_grep_report.log
+echo "-------------------------------------------------------------------" >> main_grep_report.log
 
 echo "-------------------------------------------------------------------"
-echo "--------------------FUNCTIONAL-TEST-S21_GREP-----------------------"
+echo "--------------------\033[33mFUNCTIONAL-TEST-S21_GREP\033[0m-----------------------"
 echo "-------------------------------------------------------------------"
-echo "----------------------BUILDING-THE-PROJECT-------------------------"
+echo "----------------------\033[33mBUILDING-THE-PROJECT\033[0m-------------------------"
 
 make
 
@@ -542,7 +553,7 @@ run_test_case
 TC_NAME="GHF1M"
 rm pattern.file
 echo "you\nme" > pattern.file
-FLAGS="-of"
+FLAGS="-nof"
 PATTERN="pattern.file"
 FILE="lyrics.txt empty.file"
 TEST_CASE="grep $FLAGS $PATTERN $FILE"
@@ -550,17 +561,18 @@ run_test_case
 #-------------------------------------------------------------------
 
 
-echo "---------------------------SUMMARY---------------------------------"
+echo "---------------------------\033[33mSUMMARY\033[0m---------------------------------"
 echo "SUCCESS: $COUNTER_SUCCESS"
 echo "FAIL: $COUNTER_FAIL"
 echo "-------------------------------------------------------------------"
+echo "      *** View detail report in \033[36mlogs/main_grep_report.log\033[0m ***"
+echo "-------------------------------------------------------------------"
 
-
-echo "" >> main_report.log
-echo "---------------------------SUMMARY---------------------------------" >> main_report.log
-echo "SUCCESS: $COUNTER_SUCCESS" >> main_report.log
-echo "FAIL: $COUNTER_FAIL" >> main_report.log
-echo "-------------------------------------------------------------------" >> main_report.log
+echo "" >> main_grep_report.log
+echo "---------------------------SUMMARY---------------------------------" >> main_grep_report.log
+echo "SUCCESS: $COUNTER_SUCCESS" >> main_grep_report.log
+echo "FAIL: $COUNTER_FAIL" >> main_grep_report.log
+echo "-------------------------------------------------------------------" >> main_grep_report.log
 
 if [ -d logs ]; then
   rm -rf ./logs/
