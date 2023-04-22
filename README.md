@@ -1,13 +1,13 @@
 # utils_cat_grep
 
-Development of command-line text utilities s21_cat and s21_grep implementing behavior of standart Bash utilities : cat, grep.
+Development of command-line text utilities s21_cat and s21_grep implementing behavior of standart Bash utilities: cat, grep.
 
 ### Build
-Make is used for building project. You can use \
+Make is used for building project. You can use
 
 `make all`
 
-to build both utilities or separate commands for each utility \
+to build both utilities or separate commands for each utility
 
 `make s21_cat`  for s21_cat
 
