@@ -1,8 +1,11 @@
+
 /*
  * Copyright 2023 Gleb Tolstenev
  * yonnarge@student.21-school.ru
  *
- * s21_grep.h is the header file for s21_cat utility
+ * s21_grep.h is the header file for s21_grep utility
+ *
+ * The programm "s21_grep" implement the bash util "grep"
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,7 +66,7 @@ int opt_handler(const char *file_name, int num_files, int num_str,
                 char *buf_str, const char *pattern, Options const *Opt);
 int f_handler(char *pattern);
 int o_handler(Options const *Opt, char *buffer, const char *pattern);
-void c_handler(Options const *Opt, int num_files, const char *file_name,
-               unsigned int num_matching_strings);
+int c_handler(Options const *Opt, int num_files, const char *file_name,
+              unsigned int num_matching_strings);
 
 #endif  // SRC_GREP_S21_GREP_H_

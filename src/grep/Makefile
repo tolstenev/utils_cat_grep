@@ -59,10 +59,10 @@ s21_grep: $(OBJ)
 		$(CC) $(CFLAGS) -c $< -o $@
 #------------------------------------------------------------------
 test: $(NAME)
-		sh ./$(FUNCTIONAL_TEST_FILE)
+		bash ./$(FUNCTIONAL_TEST_FILE)
 #------------------------------------------------------------------
 st: $(NAME)
-		sh ./$(SINGLE_TEST_FILE)
+		bash ./$(SINGLE_TEST_FILE)
 #------------------------------------------------------------------
 lint: $(NAME)
 		clang-format -i $(SRC) $(HEADER)

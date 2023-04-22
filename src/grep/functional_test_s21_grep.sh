@@ -84,9 +84,11 @@ We will, we will rock you
 Alright" > lyrics2.txt
 
 function clear_vars() {
+  TC_NAME=""
   FLAGS=""
   PATTERN=""
   FILE=""
+  TEST_CASE=""
 }
 
 function run_utils() {
@@ -99,7 +101,7 @@ function compare_results() {
 
   if [ "$DIF_RES" == "Files orig_$TC_NAME.log and s21_$TC_NAME.log are identical" ]
     then
-      echo "Test:$TC_NAME: \033[32m✅  Passed\033[0m"
+      echo -e "Test:$TC_NAME: \033[32m✅  Passed\033[0m"
       (( COUNTER_SUCCESS++ ))
 
       echo "" >> main_grep_report.log
@@ -113,7 +115,7 @@ function compare_results() {
       ./s21_$TEST_CASE >> main_grep_report.log
       echo "-------------------------------------------------------------------" >> main_grep_report.log
     else
-      echo "Test:$TC_NAME: \033[31m❌  Failed\033[0m"
+      echo -e "Test:$TC_NAME: \033[31m❌  Failed\033[0m"
       (( COUNTER_FAIL++ ))
 
       echo "" >> main_grep_report.log
@@ -130,7 +132,6 @@ function compare_results() {
 }
 
 function run_test_case() {
-  clear_vars
   run_utils
   compare_results
 }
@@ -146,15 +147,16 @@ echo "---------------REPORT-OF-FUNCTIONAL-TEST-S21_GREP------------------" >> ma
 echo "-------------------------------------------------------------------" >> main_grep_report.log
 
 echo "-------------------------------------------------------------------"
-echo "--------------------\033[33mFUNCTIONAL-TEST-S21_GREP\033[0m-----------------------"
+echo -e "--------------------\033[33mFUNCTIONAL-TEST-S21_GREP\033[0m-----------------------"
 echo "-------------------------------------------------------------------"
-echo "----------------------\033[33mBUILDING-THE-PROJECT\033[0m-------------------------"
+echo -e "----------------------\033[33mBUILDING-THE-PROJECT\033[0m-------------------------"
 
 make
 
 echo "-------------------------------------------------------------------"
 
 #-------------------------------------------------------------------
+clear_vars
 TC_NAME="GE1S"
 FLAGS="-e"
 PATTERN="rock"
@@ -162,6 +164,7 @@ FILE="lyrics.txt"
 TEST_CASE="grep $FLAGS $PATTERN $FILE"
 run_test_case
 #-------------------------------------------------------------------
+clear_vars
 TC_NAME="GE2S"
 FLAGS="-e"
 PATTERN="me"
@@ -169,6 +172,7 @@ FILE="lyrics.txt"
 TEST_CASE="grep $FLAGS $PATTERN $FILE"
 run_test_case
 #-------------------------------------------------------------------
+clear_vars
 TC_NAME="GE3S"
 FLAGS="-e"
 PATTERN="rock -e back"
@@ -176,6 +180,7 @@ FILE="lyrics.txt"
 TEST_CASE="grep $FLAGS $PATTERN $FILE"
 run_test_case
 #-------------------------------------------------------------------
+clear_vars
 TC_NAME="GE4M"
 FLAGS="-e"
 PATTERN="rock"
@@ -183,6 +188,7 @@ FILE="lyrics.txt "
 TEST_CASE="grep $FLAGS $PATTERN $FILE $FILE"
 run_test_case
 #-------------------------------------------------------------------
+clear_vars
 TC_NAME="GI1S"
 FLAGS="-i"
 PATTERN="Your"
@@ -190,6 +196,7 @@ FILE="lyrics.txt"
 TEST_CASE="grep $FLAGS $PATTERN $FILE"
 run_test_case
 #-------------------------------------------------------------------
+clear_vars
 TC_NAME="GV1S"
 FLAGS="-v"
 PATTERN="me"
@@ -197,6 +204,7 @@ FILE="lyrics.txt"
 TEST_CASE="grep $FLAGS $PATTERN $FILE"
 run_test_case
 #-------------------------------------------------------------------
+clear_vars
 TC_NAME="GC1S"
 FLAGS="-c"
 PATTERN="me"
@@ -204,6 +212,7 @@ FILE="lyrics.txt"
 TEST_CASE="grep $FLAGS $PATTERN $FILE"
 run_test_case
 #-------------------------------------------------------------------
+clear_vars
 TC_NAME="GL1S"
 FLAGS="-l"
 PATTERN="back"
@@ -211,6 +220,7 @@ FILE="lyrics.txt"
 TEST_CASE="grep $FLAGS $PATTERN $FILE"
 run_test_case
 #-------------------------------------------------------------------
+clear_vars
 TC_NAME="GL2M"
 FLAGS="-l"
 PATTERN="rock"
@@ -218,6 +228,7 @@ FILE="lyrics.txt lyrics2.txt"
 TEST_CASE="grep $FLAGS $PATTERN $FILE $FILE"
 run_test_case
 #-------------------------------------------------------------------
+clear_vars
 TC_NAME="GL3M"
 FLAGS="-l"
 PATTERN="back"
@@ -225,6 +236,7 @@ FILE="lyrics.txt lyrics2.txt empty.file"
 TEST_CASE="grep $FLAGS $PATTERN $FILE $FILE"
 run_test_case
 #-------------------------------------------------------------------
+clear_vars
 TC_NAME="GN1S"
 FLAGS="-n"
 PATTERN="rock"
@@ -232,6 +244,7 @@ FILE="lyrics.txt"
 TEST_CASE="grep $FLAGS $PATTERN $FILE"
 run_test_case
 #-------------------------------------------------------------------
+clear_vars
 TC_NAME="GN2S"
 FLAGS="-n"
 PATTERN="me"
@@ -239,6 +252,7 @@ FILE="lyrics.txt"
 TEST_CASE="grep $FLAGS $PATTERN $FILE"
 run_test_case
 #-------------------------------------------------------------------
+clear_vars
 TC_NAME="GN3M"
 FLAGS="-n"
 PATTERN="me"
@@ -246,6 +260,7 @@ FILE="lyrics.txt lyrics2.txt"
 TEST_CASE="grep $FLAGS $PATTERN $FILE $FILE"
 run_test_case
 #-------------------------------------------------------------------
+clear_vars
 TC_NAME="GN4M"
 FLAGS="-n"
 PATTERN="me"
@@ -253,6 +268,7 @@ FILE="lyrics.txt lyrics2.txt empty.file"
 TEST_CASE="grep $FLAGS $PATTERN $FILE $FILE"
 run_test_case
 #-------------------------------------------------------------------
+clear_vars
 TC_NAME="GH1S"
 FLAGS="-h"
 PATTERN="rock"
@@ -260,6 +276,7 @@ FILE="lyrics.txt"
 TEST_CASE="grep $FLAGS $PATTERN $FILE"
 run_test_case
 #-------------------------------------------------------------------
+clear_vars
 TC_NAME="GH2S"
 FLAGS="-h"
 PATTERN="me"
@@ -267,6 +284,7 @@ FILE="lyrics.txt"
 TEST_CASE="grep $FLAGS $PATTERN $FILE"
 run_test_case
 #-------------------------------------------------------------------
+clear_vars
 TC_NAME="GH3M"
 FLAGS="-h"
 PATTERN="me"
@@ -274,6 +292,7 @@ FILE="lyrics.txt lyrics2.txt"
 TEST_CASE="grep $FLAGS $PATTERN $FILE $FILE"
 run_test_case
 #-------------------------------------------------------------------
+clear_vars
 TC_NAME="GH4M"
 FLAGS="-h"
 PATTERN="me"
@@ -281,6 +300,7 @@ FILE="lyrics.txt lyrics2.txt empty.file"
 TEST_CASE="grep $FLAGS $PATTERN $FILE $FILE"
 run_test_case
 #-------------------------------------------------------------------
+clear_vars
 TC_NAME="GS1S"
 FLAGS="-s"
 PATTERN="rock"
@@ -288,60 +308,67 @@ FILE="nonexistent.file"
 TEST_CASE="grep $FLAGS $PATTERN $FILE"
 run_test_case
 #-------------------------------------------------------------------
+clear_vars
+rm pattern.file
+echo "rock" > pattern.file
 TC_NAME="GF1S"
-rm pattern.file
-echo "rock" > pattern.file
 FLAGS="-f"
 PATTERN="pattern.file"
 FILE="lyrics.txt"
 TEST_CASE="grep $FLAGS $PATTERN $FILE"
 run_test_case
 #-------------------------------------------------------------------
+clear_vars
+rm pattern.file
+echo "rock\nback" > pattern.file
 TC_NAME="GF2S"
-rm pattern.file
-echo "rock\nback" > pattern.file
 FLAGS="-f"
 PATTERN="pattern.file"
 FILE="lyrics.txt"
 TEST_CASE="grep $FLAGS $PATTERN $FILE"
 run_test_case
 #-------------------------------------------------------------------
-TC_NAME="GF3S"
+clear_vars
 rm pattern.file
 echo "rock\n" > pattern.file
+TC_NAME="GF3S"
 FLAGS="-f"
 PATTERN="pattern.file"
 FILE="lyrics.txt"
 TEST_CASE="grep $FLAGS $PATTERN $FILE"
 run_test_case
 #-------------------------------------------------------------------
-TC_NAME="GF4M"
+clear_vars
 rm pattern.file
 echo "rock" > pattern.file
+TC_NAME="GF4M"
 FLAGS="-f"
 PATTERN="pattern.file"
 FILE="lyrics.txt lyrics2.txt"
 TEST_CASE="grep $FLAGS $PATTERN $FILE"
 run_test_case
 #-------------------------------------------------------------------
-TC_NAME="GF5M"
+clear_vars
 rm pattern.file
 echo "rock\nback" > pattern.file
+TC_NAME="GF5M"
 FLAGS="-f"
 PATTERN="pattern.file"
 FILE="lyrics.txt lyrics2.txt"
 TEST_CASE="grep $FLAGS $PATTERN $FILE"
 run_test_case
 #-------------------------------------------------------------------
-TC_NAME="GF6M"
+clear_vars
 rm pattern.file
 echo "rock\n" > pattern.file
+TC_NAME="GF6M"
 FLAGS="-f"
 PATTERN="pattern.file"
 FILE="lyrics.txt lyrics2.txt"
 TEST_CASE="grep $FLAGS $PATTERN $FILE"
 run_test_case
 #-------------------------------------------------------------------
+clear_vars
 TC_NAME="GO1S"
 FLAGS="-o"
 PATTERN="rock"
@@ -349,6 +376,7 @@ FILE="lyrics.txt"
 TEST_CASE="grep $FLAGS $PATTERN $FILE"
 run_test_case
 #-------------------------------------------------------------------
+clear_vars
 TC_NAME="GIV1S"
 FLAGS="-iv"
 PATTERN="Your"
@@ -356,6 +384,7 @@ FILE="lyrics.txt"
 TEST_CASE="grep $FLAGS $PATTERN $FILE"
 run_test_case
 #-------------------------------------------------------------------
+clear_vars
 TC_NAME="GIC1S"
 FLAGS="-ic"
 PATTERN="Your"
@@ -363,6 +392,7 @@ FILE="lyrics.txt"
 TEST_CASE="grep $FLAGS $PATTERN $FILE"
 run_test_case
 #-------------------------------------------------------------------
+clear_vars
 TC_NAME="GIL1M"
 FLAGS="-il"
 PATTERN="Your"
@@ -370,6 +400,7 @@ FILE="lyrics.txt lyrics2.txt"
 TEST_CASE="grep $FLAGS $PATTERN $FILE"
 run_test_case
 #-------------------------------------------------------------------
+clear_vars
 TC_NAME="GIN1S"
 FLAGS="-in"
 PATTERN="Your"
@@ -377,6 +408,7 @@ FILE="lyrics.txt"
 TEST_CASE="grep $FLAGS $PATTERN $FILE"
 run_test_case
 #-------------------------------------------------------------------
+clear_vars
 TC_NAME="GIH1S"
 FLAGS="-ih"
 PATTERN="Your"
@@ -384,15 +416,17 @@ FILE="lyrics.txt"
 TEST_CASE="grep $FLAGS $PATTERN $FILE"
 run_test_case
 #-------------------------------------------------------------------
-TC_NAME="GIF1S"
+clear_vars
 rm pattern.file
 echo "Your" > pattern.file
+TC_NAME="GIF1S"
 FLAGS="-if"
 PATTERN="pattern.file"
 FILE="lyrics.txt"
 TEST_CASE="grep $FLAGS $PATTERN $FILE"
 run_test_case
 #-------------------------------------------------------------------
+clear_vars
 TC_NAME="GIO1S"
 FLAGS="-io"
 PATTERN="Your"
@@ -400,6 +434,7 @@ FILE="lyrics.txt"
 TEST_CASE="grep $FLAGS $PATTERN $FILE"
 run_test_case
 #-------------------------------------------------------------------
+clear_vars
 TC_NAME="GVC1S"
 FLAGS="-vc"
 PATTERN="me"
@@ -407,6 +442,7 @@ FILE="lyrics.txt"
 TEST_CASE="grep $FLAGS $PATTERN $FILE"
 run_test_case
 #-------------------------------------------------------------------
+clear_vars
 TC_NAME="GVL1M"
 FLAGS="-vl"
 PATTERN="rock"
@@ -414,6 +450,7 @@ FILE="lyrics.txt lyrics2.txt"
 TEST_CASE="grep $FLAGS $PATTERN $FILE"
 run_test_case
 #-------------------------------------------------------------------
+clear_vars
 TC_NAME="GVN1S"
 FLAGS="-vn"
 PATTERN="rock"
@@ -421,6 +458,7 @@ FILE="lyrics.txt"
 TEST_CASE="grep $FLAGS $PATTERN $FILE"
 run_test_case
 #-------------------------------------------------------------------
+clear_vars
 TC_NAME="GVH1M"
 FLAGS="-vh"
 PATTERN="rock"
@@ -428,15 +466,17 @@ FILE="lyrics.txt lyrics2.txt"
 TEST_CASE="grep $FLAGS $PATTERN $FILE"
 run_test_case
 #-------------------------------------------------------------------
-TC_NAME="GVF1M"
+clear_vars
 rm pattern.file
 echo "rock\nback" > pattern.file
+TC_NAME="GVF1M"
 FLAGS="-vf"
 PATTERN="pattern.file"
 FILE="lyrics.txt lyrics2.txt"
 TEST_CASE="grep $FLAGS $PATTERN $FILE"
 run_test_case
 #-------------------------------------------------------------------
+clear_vars
 TC_NAME="GVO1S"
 FLAGS="-vo"
 PATTERN="me"
@@ -444,6 +484,7 @@ FILE="lyrics.txt"
 TEST_CASE="grep $FLAGS $PATTERN $FILE"
 run_test_case
 #-------------------------------------------------------------------
+clear_vars
 TC_NAME="GCL1M"
 FLAGS="-cl"
 PATTERN="rock"
@@ -451,6 +492,7 @@ FILE="lyrics.txt lyrics2.txt"
 TEST_CASE="grep $FLAGS $PATTERN $FILE"
 run_test_case
 #-------------------------------------------------------------------
+clear_vars
 TC_NAME="GCN1M"
 FLAGS="-cn"
 PATTERN="rock"
@@ -458,6 +500,7 @@ FILE="lyrics.txt lyrics2.txt"
 TEST_CASE="grep $FLAGS $PATTERN $FILE"
 run_test_case
 #-------------------------------------------------------------------
+clear_vars
 TC_NAME="GCH1M"
 FLAGS="-ch"
 PATTERN="rock"
@@ -465,15 +508,17 @@ FILE="lyrics.txt lyrics2.txt"
 TEST_CASE="grep $FLAGS $PATTERN $FILE"
 run_test_case
 #-------------------------------------------------------------------
-TC_NAME="GCF1M"
+clear_vars
 rm pattern.file
 echo "rock" > pattern.file
+TC_NAME="GCF1M"
 FLAGS="-vf"
 PATTERN="pattern.file"
 FILE="lyrics.txt lyrics2.txt empty.file"
 TEST_CASE="grep $FLAGS $PATTERN $FILE"
 run_test_case
 #-------------------------------------------------------------------
+clear_vars
 TC_NAME="GCO1M"
 FLAGS="-co"
 PATTERN="me"
@@ -481,6 +526,7 @@ FILE="lyrics.txt lyrics2.txt empty.file"
 TEST_CASE="grep $FLAGS $PATTERN $FILE"
 run_test_case
 #-------------------------------------------------------------------
+clear_vars
 TC_NAME="GLN1M"
 FLAGS="-ln"
 PATTERN="me"
@@ -488,22 +534,25 @@ FILE="lyrics.txt lyrics2.txt empty.file"
 TEST_CASE="grep $FLAGS $PATTERN $FILE"
 run_test_case
 #-------------------------------------------------------------------
-TC_NAME="GLh1M"
+clear_vars
+TC_NAME="GLH1M"
 FLAGS="-lh"
 PATTERN="me"
 FILE="lyrics.txt lyrics2.txt empty.file"
 TEST_CASE="grep $FLAGS $PATTERN $FILE"
 run_test_case
 #-------------------------------------------------------------------
-TC_NAME="GLF1M"
+clear_vars
 rm pattern.file
 echo "rock" > pattern.file
+TC_NAME="GLF1M"
 FLAGS="-lf"
 PATTERN="pattern.file"
 FILE="lyrics.txt empty.file"
 TEST_CASE="grep $FLAGS $PATTERN $FILE"
 run_test_case
 #-------------------------------------------------------------------
+clear_vars
 TC_NAME="GLO1M"
 FLAGS="-lo"
 PATTERN="me"
@@ -511,6 +560,7 @@ FILE="lyrics.txt lyrics2.txt empty.file"
 TEST_CASE="grep $FLAGS $PATTERN $FILE"
 run_test_case
 #-------------------------------------------------------------------
+clear_vars
 TC_NAME="GNH1M"
 FLAGS="-nh"
 PATTERN="rock"
@@ -518,15 +568,17 @@ FILE="lyrics.txt lyrics2.txt"
 TEST_CASE="grep $FLAGS $PATTERN $FILE"
 run_test_case
 #-------------------------------------------------------------------
-TC_NAME="GNF1M"
+clear_vars
 rm pattern.file
 echo "rock" > pattern.file
+TC_NAME="GNF1M"
 FLAGS="-nf"
 PATTERN="pattern.file"
 FILE="lyrics.txt empty.file"
 TEST_CASE="grep $FLAGS $PATTERN $FILE"
 run_test_case
 #-------------------------------------------------------------------
+clear_vars
 TC_NAME="GNO1M"
 FLAGS="-no"
 PATTERN="pattern.file"
@@ -534,15 +586,17 @@ FILE="lyrics.txt empty.file"
 TEST_CASE="grep $FLAGS $PATTERN $FILE"
 run_test_case
 #-------------------------------------------------------------------
-TC_NAME="GHF1M"
+clear_vars
 rm pattern.file
 echo "rock" > pattern.file
+TC_NAME="GHF1M"
 FLAGS="-hf"
 PATTERN="pattern.file"
 FILE="lyrics.txt empty.file"
 TEST_CASE="grep $FLAGS $PATTERN $FILE"
 run_test_case
 #-------------------------------------------------------------------
+clear_vars
 TC_NAME="GHO1M"
 FLAGS="-ho"
 PATTERN="me"
@@ -550,9 +604,10 @@ FILE="lyrics.txt lyrics2.txt empty.file"
 TEST_CASE="grep $FLAGS $PATTERN $FILE"
 run_test_case
 #-------------------------------------------------------------------
-TC_NAME="GHF1M"
+clear_vars
 rm pattern.file
 echo "you\nme" > pattern.file
+TC_NAME="GHF1M"
 FLAGS="-nof"
 PATTERN="pattern.file"
 FILE="lyrics.txt empty.file"
@@ -560,12 +615,11 @@ TEST_CASE="grep $FLAGS $PATTERN $FILE"
 run_test_case
 #-------------------------------------------------------------------
 
-
-echo "---------------------------\033[33mSUMMARY\033[0m---------------------------------"
+echo -e "---------------------------\033[33mSUMMARY\033[0m---------------------------------"
 echo "SUCCESS: $COUNTER_SUCCESS"
 echo "FAIL: $COUNTER_FAIL"
 echo "-------------------------------------------------------------------"
-echo "      *** View detail report in \033[36mlogs/main_grep_report.log\033[0m ***"
+echo -e "      *** View detail report in \033[36mlogs/main_grep_report.log\033[0m ***"
 echo "-------------------------------------------------------------------"
 
 echo "" >> main_grep_report.log
