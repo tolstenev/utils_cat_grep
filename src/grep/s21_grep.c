@@ -142,7 +142,6 @@ int file_handler(const char **argv, const char *pattern, int num_files,
         regerror(regcode, &preg, reg_errbuf, 128);
         fprintf(stderr, "Compilation failed: '%s'\n", reg_errbuf);
         errcode = ERROR;
-        regfree(&preg);
       }
 
       if (ERROR != errcode) {
@@ -168,7 +167,7 @@ int file_handler(const char **argv, const char *pattern, int num_files,
         printf("%s\n", file_name);
         errcode = OK;
       }
-
+      regfree(&preg);
       fclose(file_ptr);
     }
   }
@@ -264,7 +263,6 @@ int o_handler(Options const *Opt, char *buf_str, const char *pattern) {
     regerror(regcode, &preg, reg_errbuf, 128);
     fprintf(stderr, "Compilation failed: '%s'\n", reg_errbuf);
     errcode = ERROR;
-    regfree(&preg);
   } else if (OK == regcode && !Opt->v) {
     regmatch_t pmatch[SIZE];
     char *s = buf_str;
@@ -279,6 +277,7 @@ int o_handler(Options const *Opt, char *buf_str, const char *pattern) {
       errcode = OK;
     }
   }
+  regfree(&preg);
   return (errcode);
 }
 

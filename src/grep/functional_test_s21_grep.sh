@@ -136,7 +136,7 @@ function run_test_case() {
   compare_results
 }
 
-rm *.log
+#rm *.log
 touch main_grep_report.log
 touch pattern.file
 touch empty.file
@@ -476,6 +476,7 @@ FILE="lyrics.txt lyrics2.txt"
 TEST_CASE="grep $FLAGS $PATTERN $FILE"
 run_test_case
 #-------------------------------------------------------------------
+# DO NOT WORK FOR LINUX. IMPLEMENTING MAC OS BEHAVIOR
 clear_vars
 TC_NAME="GVO1S"
 FLAGS="-vo"
@@ -484,6 +485,7 @@ FILE="lyrics.txt"
 TEST_CASE="grep $FLAGS $PATTERN $FILE"
 run_test_case
 #-------------------------------------------------------------------
+# DO NOT WORK FOR LINUX. IMPLEMENTING MAC OS BEHAVIOR
 clear_vars
 TC_NAME="GCL1M"
 FLAGS="-cl"
@@ -619,7 +621,7 @@ echo -e "---------------------------\033[33mSUMMARY\033[0m----------------------
 echo "SUCCESS: $COUNTER_SUCCESS"
 echo "FAIL: $COUNTER_FAIL"
 echo "-------------------------------------------------------------------"
-echo -e "      *** View detail report in \033[36mlogs/main_grep_report.log\033[0m ***"
+echo -e "      *** View detail report in \033[36mgrep/logs/main_grep_report.log\033[0m ***"
 echo "-------------------------------------------------------------------"
 
 echo "" >> main_grep_report.log
