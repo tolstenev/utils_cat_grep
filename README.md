@@ -1,6 +1,7 @@
 # utils_cat_grep
 
 Development of command-line text utilities s21_cat and s21_grep implementing behavior of standart Bash utilities: cat, grep.
+Support MacOS, Linux.
 
 ### Build
 Make is used for building project. You can use
@@ -14,6 +15,8 @@ to build both utilities or separate commands for each utility
 `make s21_grep` for s21_grep
 
 ### Test
+Functional tests is self-made by pair comparing behavior with original utils. The utils implement the MacOS behavior and they aren't work correctly in Linux. Please don't be afraid of some failed tests in Linux.
+
 Run functional test with 
 
 `make test`
