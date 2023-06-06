@@ -30,6 +30,7 @@
 #include <string.h>
 
 #define SIZE 1024
+#define LITTLE_SIZE 128
 
 typedef struct {
   char v;

@@ -17,60 +17,29 @@
 # limitations under the License.
 #
 
-#-------------------------------------------------------------------
-NAME					:= s21_grep
-#------------------------------------------------------------------
-UTILITY					:= $(NAME)
-#------------------------------------------------------------------
-HEADER					:= $(NAME).h
-#------------------------------------------------------------------
-CC						:= gcc
-#------------------------------------------------------------------
-CFLAGS					:= -std=c11 -pedantic -Wall -Werror -Wextra
-#------------------------------------------------------------------
-SRC						:= $(NAME).c
-#------------------------------------------------------------------
-OBJ						:= $(SRC:.c=.o)
-#------------------------------------------------------------------
-SINGLE_TEST_FILE		:= single_test_s21_grep.sh
-#------------------------------------------------------------------
-FUNCTIONAL_TEST_FILE	:= functional_test_s21_grep.sh
-#------------------------------------------------------------------
-
-.PHONY: all s21_grep test lint clean fclean re
+NAME		:= s21_grep
+CC			:= gcc
+CFLAGS		:= -std=c11 -pedantic -Wall -Werror -Wextra
+SRC			:= $(NAME).c
+HEADER		:= $(NAME).h
+TEST_FILE	:= functional_test_s21_grep.sh
 
 all: s21_grep
 
-#------------------------------------------------------------------
 info:
 		@echo "Available make targets:"
 		@echo "  s21_grep: create the executable file s21_grep"
 		@echo "  test:     run the functional test of the programm"
-		@echo "  stest:    run the single test of the programm"
 		@echo "  lint:     converts the code to the required style"
-		@echo "  clean:    remove generated files without the executable file s21_grep"
-		@echo "  fclean:   remove all generated files"
+		@echo "  clean:    remove all generated files"
 		@echo "  re:       remove all generated files and recompile the programm"
-#------------------------------------------------------------------
-s21_grep: $(OBJ)
-		$(CC) $(CFLAGS) $(NAME).c -o $(UTILITY)
-#------------------------------------------------------------------
-%.o: %.c $(HEADER)
-		$(CC) $(CFLAGS) -c $< -o $@
-#------------------------------------------------------------------
+
+s21_grep: $(SRC) $(HEADER)
+		$(CC) $(CFLAGS) $(SRC) -o $(NAME)
 test: $(NAME)
-		bash ./$(FUNCTIONAL_TEST_FILE)
-#------------------------------------------------------------------
-lint: $(SRC) $(HEADER)
-		clang-format -i $(SRC) $(HEADER)
-#------------------------------------------------------------------
+		bash $(TEST_FILE)
 clean:
-		rm -rf $(OBJ) *.log pattern.file empty.file lyrics.txt lyrics2.txt logs/
-#------------------------------------------------------------------
-fclean: clean
-		rm -rf $(NAME)
-#------------------------------------------------------------------
+		rm -rf $(NAME) *.log pattern.file empty.file lyrics.txt lyrics2.txt logs/
 re:
-		$(MAKE) fclean
+		$(MAKE) clean
 		$(MAKE) all
-#------------------------------------------------------------------

@@ -33,10 +33,10 @@ typedef struct {
 } Options;
 
 enum error_codes {
-  OK = 0, /* Корректное завершение работы */
+  OK = 0,    /* Корректное завершение работы */
   ERROR = 1, /* Выявлены ошибки или недоступные файлы */
-  STOP = 2, /* Работа программы была остановлена для вывода информации по
-               использованию */
+  STOP = 2,  /* Работа программы была остановлена
+                для вывода информации по использованию */
 };
 
 enum option_codes {
@@ -45,7 +45,10 @@ enum option_codes {
   HELP = 2,
 };
 
-enum position_codes { IS_BEGIN = 0, IS_MID = 1 };
+enum position_codes {
+    IS_BEGIN = 0,
+    IS_MID = 1
+};
 
 int file_exist(FILE *file);
 int parser(int argc, char **argv, Options *Opt);
